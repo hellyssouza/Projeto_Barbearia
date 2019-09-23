@@ -1,0 +1,52 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<title></title>
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body class="bg-light">
+	<div class="container my-5">
+		<div
+			class="row h-100 d-flex justify-content-center align-items-center">
+			<div class="col-sm-4">
+				<div class="card card-block">
+					<div class="card-header">ACESSO</div>
+					<div class="card-body">
+						<form action="/login" method="post">
+							<div class="form-group">
+								<input class="form-control" name="username"
+									placeholder="Usuário">
+							</div>
+							<div class="form-group">
+								<input type="password" class="form-control" name="password"
+									placeholder="Senha">
+							</div>
+							<div class="form-group">
+								<button type="submit" class="btn btn-dark btn-block">ENTRAR</button>
+							</div>
+							
+							<!-- Alertas e link cadastre-se -->
+
+							<div id="alertaErro" th:if="${param.error}">
+								<div class="alert alert-danger">Usuário e/ou senha
+									inválidos!</div>
+							</div>
+							<div id="alertaLogaut" th:if="${param.logout}">
+								<div class="alert alert-info">Até logo!</div>
+							</div>
+							<div class="form-group text-center">
+								<a href="/usuario" class="btn btn-link">Cadastrar-se</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script th:src="@{/js/jquery-3.4.1.min.js}"></script>
+	<script th:src="@{/js/bootstrap.min.js}"></script>
+	<script th:src="@{/js/login.js}"></script>
+</body>
+</html>

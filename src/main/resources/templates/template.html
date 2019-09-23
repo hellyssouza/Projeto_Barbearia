@@ -1,0 +1,39 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<title>Insert title here</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+	<div th:fragment="header">
+		<form id="container">
+			<div class="pos-f-t">
+				<nav class="navbar navbar-dark bg-dark">
+					<button class="navbar-toggler" type="button" data-toggle="collapse"
+						data-target="#navbarToggleExternalContent"
+						aria-controls="navbarToggleExternalContent" aria-expanded="true"
+						aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<a href="/login?logout" class="btn btn-dark bg-danger my-2 my-sm-0">Sair</a>
+				</nav>
+				<div class="collapse" id="navbarToggleExternalContent">
+					<div class="bg-dark p-4">
+						<ul class="nav">
+							<li id="atendimento" class="nav-item"><a
+								class="text-white nav-link active" href="/atendimento">ATENDIMENTO</a></li>
+							<!-- <li id="agendamento" class="nav-item"><a
+								class="text-white nav-link active" href="/agendamento">AGENDAMENTO</a></li> -->
+						</ul>
+					</div>
+				</div>
+			</div>
+		</form>
+		<script th:src="@{/js/jquery-3.4.1.min.js}"></script>
+		<script th:src="@{/js/bootstrap.min.js}"></script>
+	</div>
+</body>
+</html>
