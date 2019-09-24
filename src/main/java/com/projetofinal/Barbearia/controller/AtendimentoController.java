@@ -1,5 +1,7 @@
 package com.projetofinal.Barbearia.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,7 +23,7 @@ public class AtendimentoController {
 	private Gson conversor = new Gson();
 	
 	@ResponseBody
-	@RequestMapping(value = "/cadastre", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/cadastreatendimento", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> cadastre(@RequestBody String conteudo) {
 		Atendimento atendimento = conversor.fromJson(conteudo, Atendimento.class); 
 		
@@ -31,12 +33,20 @@ public class AtendimentoController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/exclua", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/excluaatendimento", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> exclua(@RequestBody String conteudo) {
 		Atendimento atendimento = conversor.fromJson(conteudo, Atendimento.class); 
 		
 		servico.remova(atendimento.getId());
 		
 		return new ResponseEntity<String>(HttpStatus.OK);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/consulteatendimentos", method = RequestMethod.GET)
+	public ResponseEntity<String> consulte() {
+		List<Atendimento> atendimentos = servico.obtenhaTodos();
+		
+		return ResponseEntity.ok().body(conversor.toJson(atendimentos));
 	}
 }

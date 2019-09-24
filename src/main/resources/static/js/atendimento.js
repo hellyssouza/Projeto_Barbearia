@@ -1,12 +1,12 @@
 (function($){
-	var data= document.getElementById("data");
+	var data = document.getElementById("data");
 	var botaoAdicionar = $("#adicionar");
 	var botaoRemover = $("#remover");
 	var botaoSalvar = $("#salvar");
 	var tabela = $("#tabela tbody");
 	
-	var adicioneItemNaTabela = function(objeto){
-		var dataEHora = objeto.DataEHorario.split("T");
+	var adicioneItemNaTabela = function(objeto, contexto){
+		var dataEHora = contexto.includes("cadastro") ? objeto.DataEHorario.split("T") : objeto.DataEHorario.split(" ");
 		
 		var colunaId = "<th scope='row'>" + objeto.Id + "</th>";
 		
@@ -14,9 +14,11 @@
 		
 		dataFormatada = dataFormatada[2] + "/" + dataFormatada[1] + "/" + dataFormatada[0];
 		
+		var horaFormatada = dataEHora[1].substr(0, 5);
+		
 		var colunaData = "<td>" + dataFormatada + "</td>";
 		
-		var colunaHora = "<td>" + dataEHora[1] + "</td>";
+		var colunaHora = "<td>" + horaFormatada + "</td>";
 		
 		var colunaQtd = "<td><span class='badge badge-secondary'>0</span></td>";
 		
@@ -60,7 +62,7 @@
 		var objeto = { Id : indiceRemover, DataEHorario : new Date(data.value)};
 		
 		$.ajax({
-			url: "exclua",
+			url: "excluaatendimento",
 			method: "POST",
 			contentType: "application/json",
 			processData: false,
@@ -83,18 +85,26 @@
 		var dados = JSON.stringify(objeto);
 		
 		$.ajax({
-			url: "cadastre",
+			url: "cadastreatendimento",
 			dataType: "json",
 			method: "POST",
 			contentType: "application/json",
 			processData: false,
 			data: dados,
 			success: function(resultado){
-				adicioneItemNaTabela(resultado);
+				adicioneItemNaTabela(resultado, "cadastro");
 			},
 			error: function(erro){
 				
 			}
+		});
+	});
+	
+	$(document).ready(function(){
+		$.get("consulteatendimentos", function(dados, status){
+			var objetos = JSON.parse(dados);
+			
+			objetos.forEach(atendimento => adicioneItemNaTabela(atendimento, "consulta"));
 		});
 	});
 })(jQuery)
