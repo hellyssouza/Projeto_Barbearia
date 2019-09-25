@@ -11,15 +11,16 @@
 	<div th:replace="template :: header"></div>
 	<div class="card">
 		<div class="card-header text-center">
-			<p class="text-info" style="display: inline;">CADASTRO DE ATENDIMENTO</p>
+			<p class="text-info" style="display: inline;">CADASTRO DE FUNCIONARIO</p>
 		</div>
 		<div class="card-body">
 			<div class="form-group row">
 				<div class="col">
-					<input id="data" class="form-control form-control"
-						type="datetime-local" placeholder=""> 
+					<input id="nome" class="form-control form-control" type="text"
+						placeholder="NOME"> 
 					<br>
-					<select class="form-control" id="funcionario"></select>
+					<input id="cargo"
+						class="form-control form-control" type="text" placeholder="CARGO">
 				</div>
 				<div class="col">
 					<button id="salvar" type="button" class="btn btn-info">SALVAR</button>
@@ -27,14 +28,12 @@
 				</div>
 			</div>
 			<div class="table-responsive-sm table-hover">
-				<table id="tabela-horarios" class="table">
+				<table id="tabela-funcionarios" class="table">
 					<thead class="thead-dark">
 						<tr>
 							<th scope="col"></th>
-							<th scope="col">DIA</th>
-							<th scope="col">HORARIO</th>
-							<th scope="col">FUNCIONARIO</th>
-							<th scope="col">AGENDAMENTOS</th>
+							<th scope="col">NOME</th>
+							<th scope="col">CARGO</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -43,6 +42,6 @@
 			</div>
 		</div>
 	</div>
-	<script th:src="@{/js/atendimento.js}"></script>
+	<script th:src="@{/js/funcionario.js}"></script>
 </body>
 </html>

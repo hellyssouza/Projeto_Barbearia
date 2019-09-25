@@ -5,8 +5,9 @@
 	var botaoSalvar = $("#salvar");
 	var tabela = $("#tabela tbody");
 	
-	var adicioneItemNaTabela = function(objeto, contexto){
-		var dataEHora = contexto.includes("cadastro") ? objeto.DataEHorario.split("T") : objeto.DataEHorario.split(" ");
+	var adicioneItemNaTabela = function(objeto){
+		debugger;
+		var dataEHora = objeto.DataEHorario.replace("T"," ").split(" ");
 		
 		var colunaId = "<th scope='row'>" + objeto.Id + "</th>";
 		
@@ -20,19 +21,21 @@
 		
 		var colunaHora = "<td>" + horaFormatada + "</td>";
 		
+		var colunaFuncionario = "<td>" + $("#funcionario option[value='" + objeto.Funcionario + "']").html() + "</td>";
+		
 		var colunaQtd = "<td><span class='badge badge-secondary'>0</span></td>";
 		
-		var linha = "<tr name='"+ "linha_" + objeto.Id +"'>" + colunaId + colunaData + colunaHora + colunaQtd + "</tr>"
+		var linha = "<tr name='"+ "linha_" + objeto.Id +"'>" + colunaId + colunaData + colunaHora + colunaFuncionario + colunaQtd +"</tr>";
 		
 		$("#tabela-horarios > tbody").append(linha);
 		
 		var selectorLinha = "[name='" + "linha_" + objeto.Id + "']";
 		
 		$(selectorLinha).on("click", function(){
-			$(".selecionado").removeClass("selecionado bg-info");
+			$(".selecionado").removeClass("selecionado bg-light");
 			
 			$(this).addClass("selecionado")
-			$(this).addClass("bg-info");
+			$(this).addClass("bg-light");
 		});
 		
 		var dados = $("#tabela-horarios").data();
@@ -42,6 +45,12 @@
 		objetos.push(objeto);
 		
 		$("#tabela-horarios").data(objetos);
+	}
+	
+	var adicioneNaComboBox = function(objeto){
+		var opcaoNome = "<option id='funcionario_" + objeto.Id + "' value='" + objeto.Id + "'>" + objeto.Nome + "</option>";
+		
+		$("#funcionario").append(opcaoNome);
 	}
 	
 	var removaItemDaTabela = function(objetos){
@@ -59,8 +68,12 @@
 		
 		var objetos = Object.values(dados).filter(x => x.Id !== indiceRemover);
 		
-		var objeto = { Id : indiceRemover, DataEHorario : new Date(data.value)};
-		
+		var objeto = { 
+				Id : indiceRemover, 
+				DataEHorario : new Date(data.value),
+				Funcionario: $("#funcionario").children("option:selected").val()
+		};
+		debugger;
 		$.ajax({
 			url: "excluaatendimento",
 			method: "POST",
@@ -80,7 +93,11 @@
 			return;
 		}
 		
-		var objeto = { Id : 0, DataEHorario : new Date(data.value)};
+		var objeto = { 
+				Id : 0, 
+				DataEHorario : new Date(data.value),
+				Funcionario: $("#funcionario").children("option:selected").val()
+		};
 		
 		var dados = JSON.stringify(objeto);
 		
@@ -92,7 +109,7 @@
 			processData: false,
 			data: dados,
 			success: function(resultado){
-				adicioneItemNaTabela(resultado, "cadastro");
+				adicioneItemNaTabela(resultado);
 			},
 			error: function(erro){
 				
@@ -101,10 +118,16 @@
 	});
 	
 	$(document).ready(function(){
+		$.get("consulteafuncionarios", function(dados, status){
+			var objetos = JSON.parse(dados);
+			
+			objetos.forEach(funcionario => adicioneNaComboBox(funcionario));
+		});
+		
 		$.get("consulteatendimentos", function(dados, status){
 			var objetos = JSON.parse(dados);
 			
-			objetos.forEach(atendimento => adicioneItemNaTabela(atendimento, "consulta"));
+			objetos.forEach(atendimento => adicioneItemNaTabela(atendimento));
 		});
 	});
 })(jQuery)

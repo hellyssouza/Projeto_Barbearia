@@ -13,20 +13,15 @@ public class ServicoDeAtendimento {
 	@Autowired
 	private RepositorioDeAtendimento repositorio;
 	
-	public void cadastreLista(List<Atendimento> atendimentos) 
-	{
-		repositorio.saveAll(atendimentos);
-	}
-	
 	public Atendimento cadastre(Atendimento atendimento) {
 		return repositorio.save(atendimento);
 	}
 	
-	public List<Atendimento> obtenhaTodos(){
+	public List<Atendimento> consulteTodos(){
 		return (List<Atendimento>) repositorio.findAll();
 	}
 	
-	public void remova(Long id) {
+	public void exclua(Long id) {
 		repositorio.deleteById(id);
 	}
 }

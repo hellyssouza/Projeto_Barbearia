@@ -8,33 +8,25 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "ATENDIMENTO")
-public class Atendimento {
+@Table(name = "FUNCIONARIO")
+public class Funcionario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID")
 	private Long Id;
 
-	@Column(name = "DATAHORARIO")
-	private String DataEHorario;
+	@Column(name = "NOME")
+	private String Nome;
 
-	@Column(name = "FUNCIONARIO")
-	private Long Funcionario;
+	@Column(name = "CARGO")
+	public String Cargo;
 
-	public Long getFuncionario() {
-		return Funcionario;
+	public String getCargo() {
+		return Cargo;
 	}
 
-	public void setFuncionario(Long funcionario) {
-		Funcionario = funcionario;
-	}
-
-	public String getDataEHorario() {
-		return DataEHorario;
-	}
-
-	public void setDataEHorario(String dataEHorario) {
-		DataEHorario = dataEHorario;
+	public void setCargo(String cargo) {
+		Cargo = cargo;
 	}
 
 	public Long getId() {
@@ -43,5 +35,13 @@ public class Atendimento {
 
 	public void setId(Long id) {
 		Id = id;
+	}
+
+	public String getNome() {
+		return Nome;
+	}
+
+	public void setNome(String nome) {
+		Nome = nome;
 	}
 }
