@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.projetofinal.Barbearia.negocio.Funcionario;
-import com.projetofinal.Barbearia.repositorio.RepositorioDeFuncionario;
+import com.projetofinal.Barbearia.repositorio.RepositorioDeFuncionarioImpl;
 
 @Service
 public class ServicoDeFuncionario {
 	@Autowired
-	private RepositorioDeFuncionario repositorio;
+	private RepositorioDeFuncionarioImpl repositorio;
 
 	public Funcionario cadastre(Funcionario funcionario) {
 		return repositorio.save(funcionario);

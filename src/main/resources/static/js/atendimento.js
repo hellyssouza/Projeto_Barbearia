@@ -6,7 +6,6 @@
 	var tabela = $("#tabela tbody");
 	
 	var adicioneItemNaTabela = function(objeto){
-		debugger;
 		var dataEHora = objeto.DataEHorario.replace("T"," ").split(" ");
 		
 		var colunaId = "<th scope='row'>" + objeto.Id + "</th>";
@@ -23,7 +22,16 @@
 		
 		var colunaFuncionario = "<td>" + $("#funcionario option[value='" + objeto.Funcionario + "']").html() + "</td>";
 		
-		var colunaQtd = "<td><span class='badge badge-secondary'>0</span></td>";
+		var colunaQtd = "";
+		
+		if(objeto.Usuario === null)
+		{
+			colunaQtd = "<td><span class='badge badge-info'>Livre</span></td>";
+		}
+		else
+		{
+			colunaQtd = "<td><span class='badge badge-warning'>Agendado</span></td>";
+		}
 		
 		var linha = "<tr name='"+ "linha_" + objeto.Id +"'>" + colunaId + colunaData + colunaHora + colunaFuncionario + colunaQtd +"</tr>";
 		
@@ -60,6 +68,11 @@
 		
 		$(".selecionado").remove();
 	}
+	var limpaCampos = function(){
+		$("#data").val("");
+		$("#funcionario option:first").attr("selected","selected");
+		$("#valor").val("");
+	}
 	
 	$(botaoRemover).on("click", function(){
 		var dados = $("#tabela-horarios").data();
@@ -73,7 +86,7 @@
 				DataEHorario : new Date(data.value),
 				Funcionario: $("#funcionario").children("option:selected").val()
 		};
-		debugger;
+		
 		$.ajax({
 			url: "excluaatendimento",
 			method: "POST",
@@ -110,6 +123,7 @@
 			data: dados,
 			success: function(resultado){
 				adicioneItemNaTabela(resultado);
+				limpaCampos();
 			},
 			error: function(erro){
 				
@@ -118,16 +132,16 @@
 	});
 	
 	$(document).ready(function(){
-		$.get("consulteafuncionarios", function(dados, status){
+		$.get("consultefuncionarios", function(dados, status){
 			var objetos = JSON.parse(dados);
 			
 			objetos.forEach(funcionario => adicioneNaComboBox(funcionario));
-		});
-		
-		$.get("consulteatendimentos", function(dados, status){
-			var objetos = JSON.parse(dados);
 			
-			objetos.forEach(atendimento => adicioneItemNaTabela(atendimento));
+			$.get("consulteatendimentos", function(dados, status){
+				var objetos = JSON.parse(dados);
+				
+				objetos.forEach(atendimento => adicioneItemNaTabela(atendimento));
+			});
 		});
 	});
 })(jQuery)

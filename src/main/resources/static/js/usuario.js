@@ -3,7 +3,6 @@
 		var mensagemSucesso = "";
 		var linkParaVoltarLogin = "";
 		var container = "";
-		debugger;
 		
 		if(objeto.cadastrado)
 		{
@@ -53,7 +52,6 @@
 			processData : false,
 			data : JSON.stringify(objeto),
 			success : function(retorno) {
-				debugger;
 				var objeto = JSON.parse(retorno);
 				
 				apresenteMensagem(objeto);

@@ -26,4 +26,9 @@ public class InicioController {
 	public ModelAndView funcionario() {
 		return new ModelAndView("funcionario");
 	}
+	
+	@RequestMapping(value = "/agendamento", method = RequestMethod.GET)
+	public ModelAndView agendamento() {
+		return new ModelAndView("agendamento");
+	}
 }

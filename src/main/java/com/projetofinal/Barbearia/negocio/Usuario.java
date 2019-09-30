@@ -32,14 +32,25 @@ public class Usuario implements Serializable {
 	private int ativo;
 
 	@Column(name = "PERMISSAO")
-	private Long idPermissao;
-	
-	public Long getIdPermissao() {
-		return idPermissao;
+	private Long permissao;
+
+	@Column(name = "FUNCIONARIO")
+	private Long funcionario;
+
+	public Long getFuncionario() {
+		return funcionario;
 	}
 
-	public void setIdPermissao(Long idPermissao) {
-		this.idPermissao = idPermissao;
+	public void setFuncionario(Long funcionario) {
+		this.funcionario = funcionario;
+	}
+
+	public Long getPermissao() {
+		return permissao;
+	}
+
+	public void setPermissao(Long permissao) {
+		this.permissao = permissao;
 	}
 
 	public Long getId() {

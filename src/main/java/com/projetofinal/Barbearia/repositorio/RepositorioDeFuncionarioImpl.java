@@ -5,13 +5,14 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
+
 import com.projetofinal.Barbearia.negocio.Funcionario;
 
 @Repository
-@EnableJpaRepositories(basePackageClasses = { FuncionarioRepository.class })
-public class RepositorioDeFuncionario implements FuncionarioRepository {
+@EnableJpaRepositories(basePackageClasses = { FuncionarioRepositorio.class })
+public class RepositorioDeFuncionarioImpl implements FuncionarioRepositorio {
 	@Autowired
-	private FuncionarioRepository repositorio;
+	private FuncionarioRepositorio repositorio;
 
 	@Override
 	public <S extends Funcionario> S save(S funcionario) {

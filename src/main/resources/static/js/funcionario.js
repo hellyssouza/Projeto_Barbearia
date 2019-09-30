@@ -33,6 +33,14 @@
 		$("#tabela-funcionarios").data(objetos);
 	}
 	
+	var adicioneNaLista = function(objeto){
+		var id = objeto[0];
+		
+		var opcao = "<option id='opcao_" + id + "'" + "value='" + id + "'>" + objeto[1] + "</option>";
+		
+		$("#funcionarios").append(opcao);
+	}
+	
 	var removaItemDaTabela = function(objetos){
 		$("#tabela-funcionarios").removeData();
 		
@@ -48,7 +56,11 @@
 		
 		var objetos = Object.values(dados).filter(x => x.Id !== indiceRemover);
 		
-		var objeto = { Id : indiceRemover, Nome : $("#nome").val(), Cargo: $("#cargo").val()};
+		var objeto = { 
+				Id : indiceRemover, 
+				Nome : $("#nome").val(), 
+				Cargo: $("#cargo").val()
+		};
 		
 		$.ajax({
 			url: "excluafuncionario",
@@ -69,7 +81,12 @@
 			return;
 		}
 		
-		var objeto = { Id : 0, Nome : $("#nome").val(), Cargo: $("#cargo").val()};
+		var objeto = { 
+				Id : 0, 
+				Nome : $('#funcionarios').find(":selected").text(), 
+				Cargo: $("#cargo").val(),
+				IdUsuario: $('#funcionarios').find(":selected").val()
+		};
 		
 		var dados = JSON.stringify(objeto);
 		
@@ -90,10 +107,16 @@
 	});
 	
 	$(document).ready(function(){
-		$.get("consulteafuncionarios", function(dados, status){
+		$.get("consultefuncionarios", function(dados, status){
 			var objetos = JSON.parse(dados);
 			
 			objetos.forEach(funcionario => adicioneItemNaTabela(funcionario));
+		});
+		
+		$.get("consulteusuarios", function(dados, status){
+			var objetos = JSON.parse(dados);
+			
+			objetos.forEach(usuario => adicioneNaLista(usuario));
 		});
 	});
 })(jQuery)

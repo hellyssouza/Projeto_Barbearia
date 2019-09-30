@@ -4,5 +4,5 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.projetofinal.Barbearia.negocio.Funcionario;
 
-public interface FuncionarioRepository extends CrudRepository<Funcionario, Long>{
+public interface FuncionarioRepositorio extends CrudRepository<Funcionario, Long>{
 }

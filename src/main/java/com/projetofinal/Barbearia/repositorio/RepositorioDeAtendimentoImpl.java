@@ -1,19 +1,42 @@
 package com.projetofinal.Barbearia.repositorio;
 
 import java.util.Optional;
-
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
-
 import com.projetofinal.Barbearia.negocio.Atendimento;
 
 @Repository
-@EnableJpaRepositories(basePackageClasses = { AtendimentoRepository.class })
-public class RepositorioDeAtendimento implements AtendimentoRepository {
+@EnableJpaRepositories(basePackageClasses = { AtendimentorRepositorio.class })
+public class RepositorioDeAtendimentoImpl implements AtendimentorRepositorio {
 	@Autowired
-	private AtendimentoRepository repositorio;
+	private AtendimentorRepositorio repositorio;
+	@Autowired
+	private EntityManagerFactory fabricaDeEntityManager;
 	
+	public boolean atualize(Long id, Long idUsuario) {
+		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
+		boolean sucesso = false;
+
+		Query update = entityManager.createQuery("UPDATE Atendimento SET Usuario = :usuario where Id = :id");
+
+		update.setParameter("usuario", idUsuario);
+		update.setParameter("id", id);
+
+		try {
+			entityManager.getTransaction().begin();
+			update.executeUpdate();
+			entityManager.getTransaction().commit();
+			sucesso = true;
+		} catch (Exception exception) {
+			entityManager.getTransaction().rollback();
+		}
+		return sucesso;
+	}
+
 	@Override
 	public <S extends Atendimento> S save(S atendimento) {
 		return repositorio.save(atendimento);

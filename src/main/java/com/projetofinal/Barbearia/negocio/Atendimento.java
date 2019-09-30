@@ -20,11 +20,22 @@ public class Atendimento {
 
 	@Column(name = "FUNCIONARIO")
 	private Long Funcionario;
+	
+	@Column(name = "USUARIO")
+	private Long Usuario;
+	
+	public Long getUsuario() {
+		return Usuario;
+	}
+
+	public void setUsuario(Long usuario) {
+		Usuario = usuario;
+	}
 
 	public Long getFuncionario() {
 		return Funcionario;
 	}
-
+	
 	public void setFuncionario(Long funcionario) {
 		Funcionario = funcionario;
 	}
