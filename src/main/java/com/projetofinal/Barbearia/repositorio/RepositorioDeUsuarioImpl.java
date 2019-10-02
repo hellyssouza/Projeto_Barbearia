@@ -2,12 +2,16 @@ package com.projetofinal.Barbearia.repositorio;
 
 import java.util.List;
 import java.util.Optional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
+
+import com.projetofinal.Barbearia.enumerador.Permissao;
 import com.projetofinal.Barbearia.negocio.Usuario;
 
 @Repository
@@ -23,17 +27,19 @@ public class RepositorioDeUsuarioImpl implements UsuarioRepositorio {
 		return repositorio.save(entity);
 	}
 
-	public boolean atualize(Long id, Long idFuncionario) {
+	public boolean atualize(Long id, Long idFuncionario, Permissao permissao) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
-		
-		Query update = entityManager.createQuery("UPDATE Usuario SET funcionario = :funcionario where id = :id");
-		
+
+		Query update = entityManager
+				.createQuery("UPDATE Usuario SET funcionario = :funcionario,permissao = :permissao where id = :id");
+
 		boolean sucesso = false;
 
 		try {
 			entityManager.getTransaction().begin();
 			update.setParameter("funcionario", idFuncionario);
 			update.setParameter("id", id);
+			update.setParameter("permissao", permissao.ordinal());
 			update.executeUpdate();
 			sucesso = true;
 			entityManager.getTransaction().commit();
@@ -43,7 +49,7 @@ public class RepositorioDeUsuarioImpl implements UsuarioRepositorio {
 
 		return sucesso;
 	}
-	
+
 	@Override
 	public <S extends Usuario> Iterable<S> saveAll(Iterable<S> entities) {
 		return repositorio.saveAll(entities);
@@ -72,33 +78,32 @@ public class RepositorioDeUsuarioImpl implements UsuarioRepositorio {
 	@SuppressWarnings("unchecked")
 	public List<Usuario> consulteTodos() {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
-		
+
 		Query query = entityManager.createQuery("SELECT u.id,u.nome FROM Usuario u where u.funcionario is null");
 
 		return query.getResultList();
 	}
 
-	public Long consulteIdPeloNome(String nome) 
-	{
+	public Long consulteIdPeloNome(String nome) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
-		
+
 		Query query = entityManager.createQuery("SELECT u.id FROM Usuario u where u.nome = :nome");
-		
+
 		query.setParameter("nome", nome);
-		
-		return (long)query.getSingleResult();
+
+		return (long) query.getSingleResult();
 	}
-	
+
 	public Long consulteIdDoUsuario(Long idFuncionario) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
-		
+
 		Query query = entityManager.createQuery("SELECT us.id FROM Usuario us where us.funcionario = :id");
 
 		query.setParameter("id", idFuncionario);
-		
-		return (long)query.getSingleResult();
+
+		return (long) query.getSingleResult();
 	}
-	
+
 	@Override
 	public long count() {
 		return repositorio.count();

@@ -1,6 +1,7 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="utf-8">
 <title>Insert title here</title>
@@ -15,7 +16,7 @@
 				ATENDIMENTO</p>
 		</div>
 		<div class="card-body">
-			<div class="form-group row">
+			<div sec:authorize="hasRole('TOTAL')" class="form-group row">
 				<div class="col-lg-5">
 					<input id="data" class="form-control" type="datetime-local"
 						title="DATA"> <br> <select class="form-control"

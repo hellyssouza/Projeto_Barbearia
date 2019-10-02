@@ -1,7 +1,7 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/extras/spring-secutiry">
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="utf-8">
 <title>Insert title here</title>
@@ -19,17 +19,26 @@
 						aria-label="Toggle navigation">
 						<span class="navbar-toggler-icon"></span>
 					</button>
-					<a href="/login?logout" class="btn btn-dark btn-link text-white bg-danger my-2 my-sm-0">SAIR</a>
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item"><span id="nome-usuario"
+							class="text-light"
+							th:text="${#authentication.getPrincipal().getUsername()}"></span>
+							<a id="botao-deslogar" href="/login?logout"
+							class="btn btn-dark btn-link text-white bg-danger">SAIR</a></li>
+					</ul>
 				</nav>
 				<div class="collapse" id="navbarToggleExternalContent">
 					<div class="bg-dark p-4">
 						<ul class="nav">
-							<li id="atendimento" class="nav-item"><a
-								class="text-white nav-link active" href="/atendimento">ATENDIMENTO</a></li>
-							<li sec:authorize="hasRole('CLIENTE')" id="agendamento" class="nav-item"><a
-								class="text-white nav-link active" href="/funcionario">FUNCIONARIO</a></li>
-							<li id="agendamento" class="nav-item"><a
-								class="text-white nav-link active" href="/agendamento">AGENDAMENTO</a></li>
+							<li sec:authorize="hasAnyRole('TOTAL,FUNCIONARIO')" id="atendimento"
+								class="nav-item"><a class="text-white nav-link active"
+								href="/atendimento">ATENDIMENTO</a></li>
+							<li sec:authorize="hasRole('TOTAL')" id="funcionario"
+								class="nav-item"><a class="text-white nav-link active"
+								href="/funcionario">FUNCIONARIO</a></li>
+							<li sec:authorize="hasRole('CLIENTE')" id="agendamento"
+								class="nav-item"><a class="text-white nav-link active"
+								href="/agendamento">AGENDAMENTO</a></li>
 						</ul>
 					</div>
 				</div>

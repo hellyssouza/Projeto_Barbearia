@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.projetofinal.Barbearia.enumerador.Permissao;
 import com.projetofinal.Barbearia.negocio.Funcionario;
 import com.projetofinal.Barbearia.negocio.Usuario;
 import com.projetofinal.Barbearia.servico.ServicoDeFuncionario;
@@ -31,15 +32,15 @@ public class FuncionarioController {
 	@RequestMapping(value = "/cadastrefuncionario", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> cadastre(@RequestBody String conteudo) {
 		JsonObject jsonObjeto = conversor.fromJson(conteudo, JsonObject.class);
-		
+
 		Long idUsuario = jsonObjeto.get("IdUsuario").getAsLong();
-		
+
 		Funcionario funcionario = conversor.fromJson(conteudo, Funcionario.class);
-		
+
 		funcionario = servicoDeFuncionario.cadastre(funcionario);
 
-		servicoDeUsuario.atualize(idUsuario, funcionario.getId());
-		
+		servicoDeUsuario.atualize(idUsuario, funcionario.getId(), Permissao.FUNCIONARIO);
+
 		return ResponseEntity.ok().body(conversor.toJson(funcionario));
 	}
 
@@ -49,11 +50,11 @@ public class FuncionarioController {
 		Funcionario funcionario = conversor.fromJson(conteudo, Funcionario.class);
 
 		Long idUsuario = servicoDeUsuario.consulteIdUsuario(funcionario.getId());
-		
-		servicoDeUsuario.atualize(idUsuario, null);
-		
+
+		servicoDeUsuario.atualize(idUsuario, null, Permissao.CLIENTE);
+
 		servicoDeFuncionario.exclua(funcionario.getId());
-		
+
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 

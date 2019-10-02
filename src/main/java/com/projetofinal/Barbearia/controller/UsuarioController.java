@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.gson.Gson;
+import com.projetofinal.Barbearia.enumerador.Permissao;
 import com.projetofinal.Barbearia.negocio.Usuario;
 import com.projetofinal.Barbearia.servico.ServicoDeUsuario;
 
@@ -30,13 +31,13 @@ public class UsuarioController {
 	public ResponseEntity<String> cadastrar(@RequestBody String conteudo) {
 		Usuario usuario = conversor.fromJson(conteudo, Usuario.class);
 		usuario.setSenha(encriptador.encode(usuario.getSenha()));
-		usuario.setPermissao(Long.parseLong("2"));
+		usuario.setPermissao((long) Permissao.CLIENTE.ordinal());
 		usuario.setFuncionario(null);
-		
+
 		Usuario usuarioCadastrado = servico.cadastre(usuario);
 
 		String jsonRetorno = usuarioCadastrado != null ? "{ \"cadastrado\": true }" : "{ \"cadastrado\": false }";
-		
+
 		return ResponseEntity.ok().body(conversor.toJson(jsonRetorno));
 	}
 }
