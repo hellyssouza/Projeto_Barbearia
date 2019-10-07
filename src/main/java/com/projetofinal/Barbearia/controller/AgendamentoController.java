@@ -68,9 +68,7 @@ public class AgendamentoController {
 		
 		Long idAgendamento = jsonObjeto.get("idAgendamento").getAsLong(); 
 		
-		Long idUsuario = null;
-		
-		servico.atualize(idAgendamento, idUsuario);
+		servico.atualize(idAgendamento, null);
 		
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}

@@ -4,6 +4,7 @@
 	var botaoRemover = $("#remover");
 	var botaoSalvar = $("#salvar");
 	var tabela = $("#tabela tbody");
+	var valor = $("#valor");
 	
 	var adicioneItemNaTabela = function(objeto){
 		var dataEHora = objeto.DataEHorario.replace("T"," ").split(" ");
@@ -20,20 +21,22 @@
 		
 		var colunaHora = "<td>" + horaFormatada + "</td>";
 		
-		var colunaFuncionario = "<td>" + $("#funcionario option[value='" + objeto.Funcionario + "']").html() + "</td>";
+		var colunaFuncionario = "<td>" + $("#funcionarios option[value='" + objeto.Funcionario + "']").html() + "</td>";
 		
-		var colunaQtd = "";
+		var colunaValor = "<td>" + formatador.formateParaMoeda(objeto.Valor) + "</td>";
+		
+		var colunaStatus = "";
 		
 		if(objeto.Usuario === null)
 		{
-			colunaQtd = "<td><span class='badge badge-info'>Livre</span></td>";
+			colunaStatus = "<td><span class='badge badge-info'>Livre</span></td>";
 		}
 		else
 		{
-			colunaQtd = "<td><span class='badge badge-warning'>Agendado</span></td>";
+			colunaStatus = "<td><span class='badge badge-warning'>Agendado</span></td>";
 		}
 		
-		var linha = "<tr name='"+ "linha_" + objeto.Id +"'>" + colunaId + colunaData + colunaHora + colunaFuncionario + colunaQtd +"</tr>";
+		var linha = "<tr name='"+ "linha_" + objeto.Id +"'>" + colunaId + colunaData + colunaHora + colunaFuncionario + colunaValor + colunaStatus +"</tr>";
 		
 		$("#tabela-horarios > tbody").append(linha);
 		
@@ -58,7 +61,7 @@
 	var adicioneNaComboBox = function(objeto){
 		var opcaoNome = "<option id='funcionario_" + objeto.Id + "' value='" + objeto.Id + "'>" + objeto.Nome + "</option>";
 		
-		$("#funcionario").append(opcaoNome);
+		$("#funcionarios").append(opcaoNome);
 	}
 	
 	var removaItemDaTabela = function(objetos){
@@ -68,10 +71,30 @@
 		
 		$(".selecionado").remove();
 	}
+	
 	var limpaCampos = function(){
 		$("#data").val("");
-		$("#funcionario option:first").attr("selected","selected");
+		$("#horario-inicio").val("");
+		$("#horario-fim").val("");
+		$("#periodo").val("");
+		$("#funcionarios option:first").attr("selected","selected");
 		$("#valor").val("");
+	}
+	
+	var valideCampos = function(){
+		if(data.value == "" 
+		|| $("#horario-inicio").val() == "" 
+		|| $("#horario-fim").val() == ""
+		|| $("#periodo").val() == ""
+		|| $("#valor").val() == "")
+		{
+			$("#mensagem").html("Existem campos que não foram preenchidos!");
+			$("#modal-alerta").modal("show");
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 	$(botaoRemover).on("click", function(){
@@ -84,7 +107,7 @@
 		var objeto = { 
 				Id : indiceRemover, 
 				DataEHorario : new Date(data.value),
-				Funcionario: $("#funcionario").children("option:selected").val()
+				Funcionario: $("#funcionarios").children("option:selected").val()
 		};
 		
 		$.ajax({
@@ -102,14 +125,19 @@
 	});
 	
 	$(botaoSalvar).on("click", function(){
-		if(data.value === ""){
+		if(valideCampos())
+		{
 			return;
 		}
 		
 		var objeto = { 
 				Id : 0, 
 				DataEHorario : new Date(data.value),
-				Funcionario: $("#funcionario").children("option:selected").val()
+				HorarioInicio: $("#horario-inicio").val(),
+				HorarioFim: $("#horario-fim").val(),
+				Periodo: $("#periodo").val(),
+				Valor: $("#valor").val().replace(".","").replace(",","."),
+				Funcionario: $("#funcionarios").children("option:selected").val()
 		};
 		
 		var dados = JSON.stringify(objeto);
@@ -121,12 +149,14 @@
 			contentType: "application/json",
 			processData: false,
 			data: dados,
-			success: function(resultado){
-				adicioneItemNaTabela(resultado);
+			success: function(dados){
+				dados.forEach(atendimento => adicioneItemNaTabela(atendimento));
 				limpaCampos();
 			},
 			error: function(erro){
-				
+				debugger;
+				$("#mensagem").html(erro.responseText);
+				$("#modal-alerta").modal("show");
 			}
 		});
 	});
@@ -143,5 +173,7 @@
 				objetos.forEach(atendimento => adicioneItemNaTabela(atendimento));
 			});
 		});
+		
+		$(valor).moeda();
 	});
 })(jQuery)

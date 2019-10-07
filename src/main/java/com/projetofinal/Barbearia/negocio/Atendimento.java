@@ -20,10 +20,30 @@ public class Atendimento {
 
 	@Column(name = "FUNCIONARIO")
 	private Long Funcionario;
-	
+
 	@Column(name = "USUARIO")
 	private Long Usuario;
-	
+
+	@Column(name = "VALOR")
+	private Float Valor;
+
+	public Atendimento() {
+	}
+
+	public Atendimento(String dataEHorarario, Long funcionario, Float valor) {
+		this.DataEHorario = dataEHorarario;
+		this.Funcionario = funcionario;
+		this.Valor = valor;
+	}
+
+	public Float getValor() {
+		return Valor;
+	}
+
+	public void setValor(Float valor) {
+		Valor = valor;
+	}
+
 	public Long getUsuario() {
 		return Usuario;
 	}
@@ -35,7 +55,7 @@ public class Atendimento {
 	public Long getFuncionario() {
 		return Funcionario;
 	}
-	
+
 	public void setFuncionario(Long funcionario) {
 		Funcionario = funcionario;
 	}
@@ -54,5 +74,9 @@ public class Atendimento {
 
 	public void setId(Long id) {
 		Id = id;
+	}
+
+	public Atendimento clone() {
+		return new Atendimento(this.DataEHorario, this.Funcionario, this.Valor);
 	}
 }

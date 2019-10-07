@@ -16,12 +16,45 @@
 				ATENDIMENTO</p>
 		</div>
 		<div class="card-body">
+			<div class="modal fade" id="modal-alerta" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title" id="exampleModalLongTitle">Alerta</h5>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body">
+			        <p id="mensagem"></p>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			
 			<div sec:authorize="hasRole('TOTAL')" class="form-group row">
 				<div class="col-lg-5">
-					<input id="data" class="form-control" type="datetime-local"
-						title="DATA"> <br> <select class="form-control"
-						id="funcionario" title="FUNCIONARIO">
-					</select> <br> <input id="valor" class="form-control" type="number"
+					<label class="font-weight-bold" for="data">DATA</label>
+					<input id="data" class="form-control" type="date" title="DATA">
+					<br>
+					
+					<label class="font-weight-bold" for="horario-inicio">HORÁRIO DE INÍCIO -</label>
+					<label class="font-weight-bold" for="horario-fim">HORÁRIO DE FIM -</label>
+					<label class="font-weight-bold" for="periodo">INTERVALO</label>
+					
+					<div class="input-group">
+						<input id="horario-inicio" class="form-control" type="time" title="HORARIO INICIO">
+						<input id="horario-fim" class="form-control" type="time" title="HORARIO FIM">
+						<input id="periodo" class="form-control" type="time" title="PERIODO">
+					</div>
+					<br>
+					<label class="font-weight-bold" for="funcionarios">FUNCIONARIO</label>
+					<select class="form-control" id="funcionarios"
+						title="FUNCIONARIO">
+					</select> 
+					<br> 
+					<label class="font-weight-bold" for="valor">VALOR</label>
+					<input id="valor" class="form-control" type="text"
 						step="0.01" title="VALOR"> <br>
 					<button id="salvar" type="button" class="btn btn-info">SALVAR</button>
 					<button type="button" id="remover" class="btn btn-info">EXCLUIR</button>
@@ -35,6 +68,7 @@
 							<th scope="col">DIA</th>
 							<th scope="col">HORARIO</th>
 							<th scope="col">FUNCIONARIO</th>
+							<th scope="col">VALOR</th>
 							<th scope="col">STATUS</th>
 						</tr>
 					</thead>
@@ -44,6 +78,7 @@
 			</div>
 		</div>
 	</div>
+	<script th:src="@{/js/formatador-de-moeda.js}"></script>
 	<script th:src="@{/js/atendimento.js}"></script>
 </body>
 </html>
