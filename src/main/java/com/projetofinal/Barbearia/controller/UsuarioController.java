@@ -31,7 +31,7 @@ public class UsuarioController {
 	public ResponseEntity<String> cadastrar(@RequestBody String conteudo) {
 		Usuario usuario = conversor.fromJson(conteudo, Usuario.class);
 		usuario.setSenha(encriptador.encode(usuario.getSenha()));
-		usuario.setPermissao((long) Permissao.CLIENTE.ordinal());
+		usuario.setPermissao((long) Permissao.CLIENTE.getCodigo());
 		usuario.setFuncionario(null);
 
 		Usuario usuarioCadastrado = servico.cadastre(usuario);

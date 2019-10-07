@@ -8,6 +8,8 @@
 	
 	var adicioneItemNaTabela = function(objeto){
 		var dataEHora = objeto.DataEHorario.replace("T"," ").split(" ");
+		debugger;
+		var funcionarios = Object.values(JSON.parse($("#tabela-horarios").data("FUNCIONARIOS")));
 		
 		var colunaId = "<th scope='row'>" + objeto.Id + "</th>";
 		
@@ -21,7 +23,7 @@
 		
 		var colunaHora = "<td>" + horaFormatada + "</td>";
 		
-		var colunaFuncionario = "<td>" + $("#funcionarios option[value='" + objeto.Funcionario + "']").html() + "</td>";
+		var colunaFuncionario = "<td>" + funcionarios.filter(x=> x.Id == objeto.Funcionario)[0].Nome + "</td>";
 		
 		var colunaValor = "<td>" + formatador.formateParaMoeda(objeto.Valor) + "</td>";
 		
@@ -154,7 +156,6 @@
 				limpaCampos();
 			},
 			error: function(erro){
-				debugger;
 				$("#mensagem").html(erro.responseText);
 				$("#modal-alerta").modal("show");
 			}
@@ -164,6 +165,8 @@
 	$(document).ready(function(){
 		$.get("consultefuncionarios", function(dados, status){
 			var objetos = JSON.parse(dados);
+			
+			$("#tabela-horarios").data("FUNCIONARIOS", JSON.stringify(objetos));
 			
 			objetos.forEach(funcionario => adicioneNaComboBox(funcionario));
 			

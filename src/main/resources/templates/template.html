@@ -36,7 +36,7 @@
 							<li sec:authorize="hasRole('TOTAL')" id="funcionario"
 								class="nav-item"><a class="text-white nav-link active"
 								href="/funcionario">FUNCIONARIO</a></li>
-							<li sec:authorize="hasRole('CLIENTE')" id="agendamento"
+							<li sec:authorize="hasAnyRole('CLIENTE')" id="agendamento"
 								class="nav-item"><a class="text-white nav-link active"
 								href="/agendamento">AGENDAMENTO</a></li>
 						</ul>

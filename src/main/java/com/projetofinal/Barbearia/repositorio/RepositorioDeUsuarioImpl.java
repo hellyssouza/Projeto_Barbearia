@@ -39,7 +39,7 @@ public class RepositorioDeUsuarioImpl implements UsuarioRepositorio {
 			entityManager.getTransaction().begin();
 			update.setParameter("funcionario", idFuncionario);
 			update.setParameter("id", id);
-			update.setParameter("permissao", (long) permissao.ordinal());
+			update.setParameter("permissao", (long) permissao.getCodigo());
 			update.executeUpdate();
 			sucesso = true;
 			entityManager.getTransaction().commit();
