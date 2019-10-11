@@ -30,8 +30,8 @@ public class ServicoDeUsuario {
 		return repositorio.consulteIdDoUsuario(idFuncionario);
 	}
 
-	public Long consulteIdPeloNome(String nome) {
-		return repositorio.consulteIdPeloNome(nome);
+	public Long consulteIdDoUsuario(String nome) {
+		return repositorio.consulteIdDoUsuario(nome);
 	}
 
 	public List<Usuario> consulteTodos() {

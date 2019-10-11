@@ -7,34 +7,32 @@
 <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body class="">
+<body class="bg-light">
 	<div th:replace="template :: header"></div>
 	<div class="card">
 		<div class="card-header text-center">
-			<p class="text-info" style="display: inline;">CADASTRO DE
-				FUNCIONARIO</p>
+			<p class="text-info" style="display: inline;">AGENDAMENTO</p>
 		</div>
 		<div class="card-body">
 			<div class="form-group row">
 				<div class="col-lg-5">
-					<label class="font-weight-bold" for="funcionarios">FUNCIONARIO</label>
-					<select class="form-control" id="funcionarios">
-    				</select>
+					<label class="font-weight-bold" for="nome">NOME</label>
+					<input id="nome" class="form-control form-control" type="text" title="NOME">
 					<br>
-					<label class="font-weight-bold" for="funcionarios">CARGO</label>
-					<input id="cargo" class="form-control" type="text" title="CARGO">
+					<label class="font-weight-bold" for="funcionarios">VALOR</label>
+					<input id="valor" class="form-control" type="text" title="VALOR">
 					<br>
 					<button id="salvar" type="button" class="btn btn-info">SALVAR</button>
 					<button type="button" id="remover" class="btn btn-info">EXCLUIR</button>
 				</div>
 			</div>
 			<div class="table-responsive-sm table-hover">
-				<table id="tabela-funcionarios" class="table">
+				<table id="tabela-servicos" class="table">
 					<thead class="thead-dark">
 						<tr>
 							<th scope="col"></th>
 							<th scope="col">NOME</th>
-							<th scope="col">CARGO</th>
+							<th scope="col">VALOR</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -43,6 +41,6 @@
 			</div>
 		</div>
 	</div>
-	<script th:src="@{/js/funcionario.js}"></script>
+	<script th:src="@{/js/servico.js}"></script>
 </body>
 </html>

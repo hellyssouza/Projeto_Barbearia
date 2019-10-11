@@ -84,10 +84,10 @@ public class RepositorioDeUsuarioImpl implements UsuarioRepositorio {
 		return query.getResultList();
 	}
 
-	public Long consulteIdPeloNome(String nome) {
+	public Long consulteIdDoUsuario(String nome) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
 
-		Query query = entityManager.createQuery("SELECT u.id FROM Usuario u where u.nome = :nome");
+		Query query = entityManager.createQuery("SELECT u.id FROM Usuario u where u.login = :nome");
 
 		query.setParameter("nome", nome);
 

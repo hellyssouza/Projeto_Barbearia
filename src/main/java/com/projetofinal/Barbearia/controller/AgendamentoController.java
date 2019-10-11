@@ -42,7 +42,7 @@ public class AgendamentoController {
 		
 		usuario.setNome(usuarioDoContexto.getName());
 		
-		usuario.setId(servicoDeUsuario.consulteIdPeloNome(usuario.getNome()));
+		usuario.setId(servicoDeUsuario.consulteIdDoUsuario(usuario.getNome()));
 		
 		return ResponseEntity.ok().body(conversor.toJson(usuario));
 	}

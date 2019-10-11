@@ -5,17 +5,17 @@
 	var tabela = $("#tabela tbody");
 	
 	var adicioneItemNaTabela = function(objeto){
-		var colunaId = "<th scope='row'>" + objeto.Id + "</th>";
+		var colunaId = "<th scope='row'>" + objeto.id + "</th>";
 		
-		var colunaNome = "<td>" + objeto.Nome + "</td>";
+		var colunaNome = "<td>" + objeto.nome + "</td>";
 		
-		var colunaCargo = "<td>" + objeto.Cargo + "</td>";
+		var colunaValor = "<td>" + accounting.formatMoney(objeto.valor) + "</td>";
 		
-		var linha = "<tr name='"+ "linha_" + objeto.Id +"'>" + colunaId + colunaNome + colunaCargo + "</tr>"
+		var linha = "<tr name='"+ "linha_" + objeto.id +"'>" + colunaId + colunaNome + colunaValor + "</tr>"
 		
-		$("#tabela-funcionarios > tbody").append(linha);
+		$("#tabela-servicos > tbody").append(linha);
 		
-		var selectorLinha = "[name='" + "linha_" + objeto.Id + "']";
+		var selectorLinha = "[name='" + "linha_" + objeto.id + "']";
 		
 		$(selectorLinha).on("click", function(){
 			$(".selecionado").removeClass("selecionado bg-light");
@@ -24,39 +24,31 @@
 			$(this).addClass("bg-light");
 		});
 		
-		var dados = $("#tabela-funcionarios").data();
+		var dados = $("#tabela-servicos").data();
 		
 		var objetos = Object.values(dados); 
 		
 		objetos.push(objeto);
 		
-		$("#tabela-funcionarios").data(objetos);
-	}
-	
-	var adicioneNaLista = function(objeto){
-		var id = objeto[0];
-		
-		var opcao = "<option id='opcao_" + id + "'" + "value='" + id + "'>" + objeto[1] + "</option>";
-		
-		$("#funcionarios").append(opcao);
+		$("#tabela-servicos").data(objetos);
 	}
 	
 	var removaItemDaTabela = function(objetos){
-		$("#tabela-funcionarios").removeData();
+		$("#tabela-servicos").removeData();
 		
-		$("#tabela-funcionarios").data(objetos);
+		$("#tabela-servicos").data(objetos);
 		
 		$(".selecionado").remove();
 	}
 	
 	var limpeCampos = function(){
-		$("#funcionarios option:first").attr("selected","selected");
-		$("#cargo").val("");
+		$("#nome").val("");
+		$("#valor").val("");
 	}
 	
 	var valideCampos = function(){
-		if($("#funcionarios").children("option:selected").val() === "" || 
-		   $("#cargo").val() === "")
+		if($("#nome").val() === "" || 
+		   $("#valor").val() === "")
 		{
 			$.notify("Existem campos que não foram preenchidos!", { className: 'error', position: "top lefth" });
 			
@@ -65,21 +57,20 @@
 		
 		return false;
 	}
+	
 	$(botaoRemover).on("click", function(){
-		var dados = $("#tabela-funcionarios").data();
+		var dados = $("#tabela-servicos").data();
 		
 		var indiceRemover = parseInt($(".selecionado [scope='row']").html());
 		
 		var objetos = Object.values(dados).filter(x => x.Id !== indiceRemover);
 		
 		var objeto = { 
-				Id : indiceRemover, 
-				Nome : $("#nome").val(), 
-				Cargo: $("#cargo").val()
+				id : indiceRemover
 		};
 		
 		$.ajax({
-			url: "excluafuncionario",
+			url: "excluaservico",
 			method: "POST",
 			contentType: "application/json",
 			processData: false,
@@ -98,16 +89,15 @@
 		}
 		
 		var objeto = { 
-				Id : 0, 
-				Nome : $('#funcionarios').find(":selected").text(), 
-				Cargo: $("#cargo").val(),
-				IdUsuario: $('#funcionarios').find(":selected").val()
+				id : 0, 
+				nome : $('#nome').val(), 
+				valor: accounting.unformat($("#valor").val())
 		};
 		
 		var dados = JSON.stringify(objeto);
 		
 		$.ajax({
-			url: "cadastrefuncionario",
+			url: "cadastreservico",
 			dataType: "json",
 			method: "POST",
 			contentType: "application/json",
@@ -124,16 +114,14 @@
 	});
 	
 	$(document).ready(function(){
-		$.get("consultefuncionarios", function(dados, status){
-			var objetos = JSON.parse(dados);
-			
-			objetos.forEach(funcionario => adicioneItemNaTabela(funcionario));
+		$("#valor").focusout(function(){
+			$("#valor").val(accounting.formatMoney($("#valor").val()));
 		});
 		
-		$.get("consulteusuarios", function(dados, status){
+		$.get("consulteservicos", function(dados, status){
 			var objetos = JSON.parse(dados);
 			
-			objetos.forEach(usuario => adicioneNaLista(usuario));
+			objetos.forEach(servico => adicioneItemNaTabela(servico));
 		});
 	});
 })(jQuery)

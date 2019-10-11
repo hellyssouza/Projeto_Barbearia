@@ -16,22 +16,6 @@
 				ATENDIMENTO</p>
 		</div>
 		<div class="card-body">
-			<div class="modal fade" id="modal-alerta" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-			  <div class="modal-dialog" role="document">
-			    <div class="modal-content">
-			      <div class="modal-header">
-			        <h5 class="modal-title" id="exampleModalLongTitle">Alerta</h5>
-			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-			          <span aria-hidden="true">&times;</span>
-			        </button>
-			      </div>
-			      <div class="modal-body">
-			        <p id="mensagem"></p>
-			      </div>
-			    </div>
-			  </div>
-			</div>
-			
 			<div sec:authorize="hasRole('TOTAL')" class="form-group row">
 				<div class="col-lg-5">
 					<label class="font-weight-bold" for="data">DATA</label>
@@ -52,10 +36,7 @@
 					<select class="form-control" id="funcionarios"
 						title="FUNCIONARIO">
 					</select> 
-					<br> 
-					<label class="font-weight-bold" for="valor">VALOR</label>
-					<input id="valor" class="form-control" type="text"
-						step="0.01" title="VALOR"> <br>
+					<br>
 					<button id="salvar" type="button" class="btn btn-info">SALVAR</button>
 					<button type="button" id="remover" class="btn btn-info">EXCLUIR</button>
 				</div>

@@ -4,11 +4,10 @@
 	var botaoRemover = $("#remover");
 	var botaoSalvar = $("#salvar");
 	var tabela = $("#tabela tbody");
-	var valor = $("#valor");
 	
 	var adicioneItemNaTabela = function(objeto){
 		var dataEHora = objeto.DataEHorario.replace("T"," ").split(" ");
-		debugger;
+		
 		var funcionarios = Object.values(JSON.parse($("#tabela-horarios").data("FUNCIONARIOS")));
 		
 		var colunaId = "<th scope='row'>" + objeto.Id + "</th>";
@@ -23,9 +22,9 @@
 		
 		var colunaHora = "<td>" + horaFormatada + "</td>";
 		
-		var colunaFuncionario = "<td>" + funcionarios.filter(x=> x.Id == objeto.Funcionario)[0].Nome + "</td>";
+		var colunaValor = "<td>" + accounting.formatMoney(objeto.Valor) + "</td>";
 		
-		var colunaValor = "<td>" + formatador.formateParaMoeda(objeto.Valor) + "</td>";
+		var colunaFuncionario = "<td>" + funcionarios.filter(x=> x.Id == objeto.Funcionario)[0].Nome + "</td>";
 		
 		var colunaStatus = "";
 		
@@ -80,18 +79,15 @@
 		$("#horario-fim").val("");
 		$("#periodo").val("");
 		$("#funcionarios option:first").attr("selected","selected");
-		$("#valor").val("");
 	}
 	
 	var valideCampos = function(){
 		if(data.value == "" 
 		|| $("#horario-inicio").val() == "" 
 		|| $("#horario-fim").val() == ""
-		|| $("#periodo").val() == ""
-		|| $("#valor").val() == "")
+		|| $("#periodo").val() == "")
 		{
-			$("#mensagem").html("Existem campos que não foram preenchidos!");
-			$("#modal-alerta").modal("show");
+			$.notify("Existem campos que não foram preenchidos!", { className: 'error', position: "top lefth" });
 			
 			return true;
 		}
@@ -138,7 +134,7 @@
 				HorarioInicio: $("#horario-inicio").val(),
 				HorarioFim: $("#horario-fim").val(),
 				Periodo: $("#periodo").val(),
-				Valor: $("#valor").val().replace(".","").replace(",","."),
+				Valor: 0,
 				Funcionario: $("#funcionarios").children("option:selected").val()
 		};
 		
@@ -176,7 +172,5 @@
 				objetos.forEach(atendimento => adicioneItemNaTabela(atendimento));
 			});
 		});
-		
-		$(valor).moeda();
 	});
 })(jQuery)
