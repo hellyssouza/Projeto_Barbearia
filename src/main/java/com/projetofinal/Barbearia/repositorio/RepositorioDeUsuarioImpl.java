@@ -46,6 +46,9 @@ public class RepositorioDeUsuarioImpl implements UsuarioRepositorio {
 		} catch (Exception exception) {
 			entityManager.getTransaction().rollback();
 		}
+		finally {
+			entityManager.close();
+		}
 
 		return sucesso;
 	}
@@ -80,8 +83,12 @@ public class RepositorioDeUsuarioImpl implements UsuarioRepositorio {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
 
 		Query query = entityManager.createQuery("SELECT u.id,u.nome FROM Usuario u where u.funcionario is null");
-
-		return query.getResultList();
+		
+		List<Usuario> ususarios = query.getResultList();
+		
+		entityManager.close();
+		
+		return ususarios;
 	}
 
 	public Long consulteIdDoUsuario(String nome) {
@@ -90,8 +97,12 @@ public class RepositorioDeUsuarioImpl implements UsuarioRepositorio {
 		Query query = entityManager.createQuery("SELECT u.id FROM Usuario u where u.login = :nome");
 
 		query.setParameter("nome", nome);
-
-		return (long) query.getSingleResult();
+		
+		Long idUsuario = (long) query.getSingleResult();
+		
+		entityManager.close();
+		
+		return idUsuario;
 	}
 
 	public Long consulteIdDoUsuario(Long idFuncionario) {
@@ -101,7 +112,36 @@ public class RepositorioDeUsuarioImpl implements UsuarioRepositorio {
 
 		query.setParameter("id", idFuncionario);
 
-		return (long) query.getSingleResult();
+		Long idUsuario = (long) query.getSingleResult();
+		
+		entityManager.close();
+		
+		return idUsuario;
+	}
+
+	public Long consulteIdDeFuncionario(Long idUsuario) {
+		Long idFuncionario = null;
+
+		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
+
+		Query query = entityManager.createQuery("SELECT us.funcionario FROM Usuario us where us.id = :id");
+
+		query.setParameter("id", idUsuario);
+		
+		try {
+			idFuncionario = (Long) query.getSingleResult();
+		} catch (Exception e) {
+		}
+		
+		entityManager.close();
+		
+		return idFuncionario;
+	}
+
+	public boolean usuarioLogadoEFuncionario(Long idUsuario) {
+		Long idFuncionario = consulteIdDeFuncionario(idUsuario);
+
+		return idFuncionario == null ? false : true;
 	}
 
 	@Override

@@ -1,12 +1,17 @@
 package com.projetofinal.Barbearia.repositorio;
 
+import java.util.List;
 import java.util.Optional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
+
 import com.projetofinal.Barbearia.negocio.Atendimento;
 
 @Repository
@@ -16,7 +21,7 @@ public class RepositorioDeAtendimentoImpl implements AtendimentorRepositorio {
 	private AtendimentorRepositorio repositorio;
 	@Autowired
 	private EntityManagerFactory fabricaDeEntityManager;
-	
+
 	public boolean atualize(Long id, Long idUsuario) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
 		boolean sucesso = false;
@@ -34,7 +39,26 @@ public class RepositorioDeAtendimentoImpl implements AtendimentorRepositorio {
 		} catch (Exception exception) {
 			entityManager.getTransaction().rollback();
 		}
+		finally {
+			entityManager.close();
+		}
+		
 		return sucesso;
+	}
+
+	public List<Atendimento> consultePorFuncionario(Long idFuncionario) {
+		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
+
+		TypedQuery<Atendimento> query = entityManager
+				.createQuery("select at from Atendimento at where at.Funcionario = :id", Atendimento.class);
+
+		query.setParameter("id", idFuncionario);
+		
+		List<Atendimento> atendimentos = query.getResultList();
+		
+		entityManager.close();
+		
+		return atendimentos;
 	}
 
 	@Override

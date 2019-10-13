@@ -22,26 +22,15 @@
 		
 		var colunaHora = "<td>" + horaFormatada + "</td>";
 		
-		var colunaValor = "<td>" + accounting.formatMoney(objeto.Valor) + "</td>";
-		
 		var colunaFuncionario = "<td>" + funcionarios.filter(x=> x.Id == objeto.Funcionario)[0].Nome + "</td>";
 		
-		var colunaStatus = "";
-		
-		if(objeto.Usuario === null)
-		{
-			colunaStatus = "<td><span class='badge badge-info'>Livre</span></td>";
-		}
-		else
-		{
-			colunaStatus = "<td><span class='badge badge-warning'>Agendado</span></td>";
-		}
-		
-		var linha = "<tr name='"+ "linha_" + objeto.Id +"'>" + colunaId + colunaData + colunaHora + colunaFuncionario + colunaValor + colunaStatus +"</tr>";
+		var linha = "<tr name='"+ "linha_" + objeto.Id +"'>" + colunaId + colunaData + colunaHora + colunaFuncionario +"</tr>";
 		
 		$("#tabela-horarios > tbody").append(linha);
 		
 		var selectorLinha = "[name='" + "linha_" + objeto.Id + "']";
+		
+		adicioneColunaStatus(selectorLinha, objeto);
 		
 		$(selectorLinha).on("click", function(){
 			$(".selecionado").removeClass("selecionado bg-light");
@@ -57,6 +46,66 @@
 		objetos.push(objeto);
 		
 		$("#tabela-horarios").data(objetos);
+	}
+	
+	var adicioneColunaStatus = function(selectorLinha, objeto){
+		var statusLivre = "<td><span class='badge badge-info'>Livre</span></td>";
+		var colunaStatus = "";
+		
+		if(objeto.Usuario === null)
+		{
+			$(selectorLinha).append(statusLivre);
+		}
+		else
+		{
+			$.ajax({
+				url: "consulteusuario",
+				dataType: "json",
+				method: "POST",
+				contentType: "application/json",
+				processData: false,
+				data: JSON.stringify({id: objeto.Usuario }),
+				success: function(usuario){
+					colunaStatus += "<td>																		  ";
+					colunaStatus += "    <div id='caixa-agendamento' class='text-center'>                         ";
+					colunaStatus += "        <div id='status-agendamento-" + objeto.Id + "' class='font-weight-bold'>Agendado</div> ";
+					colunaStatus += "        <div>Cliente: {Nome}</div>                                           ";
+					colunaStatus += "        <div>{Valor}</div>                                                   ";
+					colunaStatus += "      	<div id='caixa-acoes'>                                                                 ";
+					colunaStatus += "      		<button id='cancelar-" + objeto.Id +"' type='button' class='btn btn-link'>Cancelar</button>      ";
+					colunaStatus += "      	</div>                                                                ";
+					colunaStatus += "    </div>                                                                   ";
+					colunaStatus += "</td>                                                                        ";
+					
+					var seletorBotaoCancelar = "[id='cancelar-" + objeto.Id + "']";
+					
+					colunaStatus = colunaStatus.replace('{Nome}', usuario.nome);
+					
+					colunaStatus = colunaStatus.replace('{Valor}', accounting.formatMoney(objeto.Valor));
+					
+					$(selectorLinha).append(colunaStatus);
+					
+					$(seletorBotaoCancelar).on('click', function(){
+						$.ajax({
+							url: "canceleatendimento",
+							method: "POST",
+							dataType: "json",
+							contentType: "application/json",
+							processData: false,
+							data: JSON.stringify(objeto),
+							success: function(retorno){
+								$(selectorLinha).children().last().remove();
+								$(selectorLinha).append(statusLivre);
+							},
+							error: function(erro){
+							}
+						});
+					});
+				},
+				error: function(erro){
+				}
+			});
+		}
 	}
 	
 	var adicioneNaComboBox = function(objeto){
@@ -138,15 +187,13 @@
 				Funcionario: $("#funcionarios").children("option:selected").val()
 		};
 		
-		var dados = JSON.stringify(objeto);
-		
 		$.ajax({
 			url: "cadastreatendimento",
 			dataType: "json",
 			method: "POST",
 			contentType: "application/json",
 			processData: false,
-			data: dados,
+			data: JSON.stringify(objeto),
 			success: function(dados){
 				dados.forEach(atendimento => adicioneItemNaTabela(atendimento));
 				limpaCampos();

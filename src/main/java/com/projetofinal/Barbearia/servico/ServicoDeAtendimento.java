@@ -45,6 +45,10 @@ public class ServicoDeAtendimento {
 		return repositorio.atualize(id, idUsuario);
 	}
 
+	public List<Atendimento> consultePorFuncionario(Long idFuncionario){
+		return repositorio.consultePorFuncionario(idFuncionario);
+	}
+	
 	public List<Atendimento> consulteTodos() {
 		return (List<Atendimento>) repositorio.findAll();
 	}

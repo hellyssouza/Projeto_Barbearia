@@ -6,37 +6,34 @@
 <meta charset="utf-8">
 <title>Insert title here</title>
 <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+<link th:href="@{/css/atendimento.css}" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body class="bg-light">
 	<div th:replace="template :: header"></div>
 	<div class="card">
 		<div class="card-header text-center">
-			<p class="text-info" style="display: inline;">CADASTRO DE
-				ATENDIMENTO</p>
+			<p class="text-info" style="display: inline;">ATENDIMENTOS</p>
 		</div>
 		<div class="card-body">
 			<div sec:authorize="hasRole('TOTAL')" class="form-group row">
 				<div class="col-lg-5">
-					<label class="font-weight-bold" for="data">DATA</label>
-					<input id="data" class="form-control" type="date" title="DATA">
-					<br>
-					
-					<label class="font-weight-bold" for="horario-inicio">HORÁRIO DE INÍCIO -</label>
-					<label class="font-weight-bold" for="horario-fim">HORÁRIO DE FIM -</label>
-					<label class="font-weight-bold" for="periodo">INTERVALO</label>
-					
+					<label class="font-weight-bold" for="data">DATA</label> <input
+						id="data" class="form-control" type="date" title="DATA"> <br>
+
+					<label class="font-weight-bold" for="horario-inicio">HORÁRIO
+						DE INÍCIO -</label> <label class="font-weight-bold" for="horario-fim">HORÁRIO
+						DE FIM -</label> <label class="font-weight-bold" for="periodo">INTERVALO</label>
+
 					<div class="input-group">
-						<input id="horario-inicio" class="form-control" type="time" title="HORARIO INICIO">
-						<input id="horario-fim" class="form-control" type="time" title="HORARIO FIM">
-						<input id="periodo" class="form-control" type="time" title="PERIODO">
+						<input id="horario-inicio" class="form-control" type="time"
+							title="HORARIO INICIO"> <input id="horario-fim"
+							class="form-control" type="time" title="HORARIO FIM"> <input
+							id="periodo" class="form-control" type="time" title="PERIODO">
 					</div>
-					<br>
-					<label class="font-weight-bold" for="funcionarios">FUNCIONARIO</label>
-					<select class="form-control" id="funcionarios"
-						title="FUNCIONARIO">
-					</select> 
-					<br>
+					<br> <label class="font-weight-bold" for="funcionarios">FUNCIONARIO</label>
+					<select class="form-control" id="funcionarios" title="FUNCIONARIO">
+					</select> <br>
 					<button id="salvar" type="button" class="btn btn-info">SALVAR</button>
 					<button type="button" id="remover" class="btn btn-info">EXCLUIR</button>
 				</div>
@@ -49,7 +46,6 @@
 							<th scope="col">DIA</th>
 							<th scope="col">HORARIO</th>
 							<th scope="col">FUNCIONARIO</th>
-							<th scope="col">VALOR</th>
 							<th scope="col">STATUS</th>
 						</tr>
 					</thead>
@@ -59,7 +55,6 @@
 			</div>
 		</div>
 	</div>
-	<script th:src="@{/js/formatador-de-moeda.js}"></script>
 	<script th:src="@{/js/atendimento.js}"></script>
 </body>
 </html>
