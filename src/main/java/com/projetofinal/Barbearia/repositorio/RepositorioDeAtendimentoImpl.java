@@ -22,14 +22,15 @@ public class RepositorioDeAtendimentoImpl implements AtendimentorRepositorio {
 	@Autowired
 	private EntityManagerFactory fabricaDeEntityManager;
 
-	public boolean atualize(Long id, Long idUsuario) {
+	public boolean atualize(Long id, Long idUsuario, Float valor) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
 		boolean sucesso = false;
 
-		Query update = entityManager.createQuery("UPDATE Atendimento SET Usuario = :usuario where Id = :id");
+		Query update = entityManager.createQuery("UPDATE Atendimento SET Usuario = :usuario, Valor = :valor where Id = :id");
 
 		update.setParameter("usuario", idUsuario);
 		update.setParameter("id", id);
+		update.setParameter("valor", valor);
 
 		try {
 			entityManager.getTransaction().begin();

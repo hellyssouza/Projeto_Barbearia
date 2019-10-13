@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -50,7 +51,9 @@ public class AgendamentoController {
 		
 		Long idUsuario = jsonObjeto.get("idUsuario").getAsLong();
 		
-		servico.atualize(idAgendamento, idUsuario);
+		Float valor = jsonObjeto.get("valor").getAsFloat();
+		
+		servico.atualize(idAgendamento, idUsuario, valor);
 		
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
@@ -62,7 +65,7 @@ public class AgendamentoController {
 		
 		Long idAgendamento = jsonObjeto.get("idAgendamento").getAsLong(); 
 		
-		servico.atualize(idAgendamento, null);
+		servico.atualize(idAgendamento, null, Float.parseFloat("0"));
 		
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}

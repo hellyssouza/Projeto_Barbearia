@@ -101,7 +101,7 @@ public class AtendimentoController {
 	public ResponseEntity<String> cancele(@RequestBody String conteudo) {
 		Atendimento atendimento = conversor.fromJson(conteudo, Atendimento.class);
 		
-		servicoDeAtendimento.atualize(atendimento.getId(), null);
+		servicoDeAtendimento.atualize(atendimento.getId(), null, Float.parseFloat("0"));
 		
 		atendimento.setUsuario(null);
 		

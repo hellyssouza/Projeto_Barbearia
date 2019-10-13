@@ -51,25 +51,12 @@
 		return colunas;
 	}
 	
-	var adicioneEventosNosBotoes = function(objeto){
-		var usuarioLogado = JSON.parse($("#tabela-horarios").data("USUARIOLOGADO"));
-		
+	var adicioneEventosNosBotoes = function(objeto)
+	{
 		$("[id='agendar_" + objeto.Id + "']").on("click", function(){
-			var dados = { idAgendamento: objeto.Id, idUsuario: usuarioLogado.id };
+			$('#confirme-agendamento').modal('show');
 			
-			$.ajax({
-				url: "efetueagendamento",
-				method: "POST",
-				contentType: "application/json",
-				processData: false,
-				data: JSON.stringify(dados),
-				success: function(){
-					$("#tabela-horarios tbody").html("");
-					carregueDadosDaTabela();
-				},
-				error: function(erro){
-				}
-			});
+			$("#tabela-horarios").data("EMAGENDAMENTO", objeto.Id);
 		});
 		
 		$("[id='cancelar_" + objeto.Id + "']").on("click", function(){
@@ -91,7 +78,8 @@
 		});
 	}
 	
-	var adicioneItemNaTabela = function(objeto){
+	var adicioneItemNaTabela = function(objeto)
+	{
 		var colunas = crieColunasDaTabela(objeto);
 		
 		var linha = "<tr name='" + "linha_" + objeto.Id +"'>" + colunas[0] + colunas[1] + colunas[2] + colunas[3] + colunas[4] + "</tr>";
@@ -103,9 +91,14 @@
 		adicioneEventosNosBotoes(objeto);
 	}
 	
-	var carregueDadosDaTabela = function(){
+	var carregueDadosDaTabela = function()
+	{
 		$.get("consulteusuariocontexto", function(dados, status){
 			$("#tabela-horarios").data("USUARIOLOGADO", dados);
+		});
+		
+		$.get("consulteservicos", function(dados, status){
+			$("#tabela-horarios").data("SERVICOS", dados);
 		});
 		
 		$.get("consultefuncionarios", function(dados, status){
@@ -121,5 +114,76 @@
 	
 	$(document).ready(function(){
 		carregueDadosDaTabela();
+				
+		$('#confirme-agendamento').on('shown.bs.modal', function () {
+			var servicos = JSON.parse($("#tabela-horarios").data("SERVICOS"));
+			
+			$("#servicos").html("");
+			
+			servicos.forEach(servico => {
+				var caixaServico = "<div class='col-lg-2 text-white caixa-agendamento' id='caixa-servico-" + servico.id + "'>";
+				caixaServico += "<div>" + servico.nome + "</div>";
+				caixaServico += "<div>" + accounting.formatMoney(servico.valor) +"</div>";
+				caixaServico += "</div>";
+				
+				$("#servicos").append(caixaServico);
+				
+				$("[id='caixa-servico-" + servico.id + "']").on("click", function(){
+					if($(this).hasClass("selecionado"))
+					{
+						var valor = accounting.unformat($("#valor").val()) - servico.valor;
+						
+						$("#valor").val(accounting.formatMoney(valor));
+						
+						$(this).removeClass("selecionado");
+						
+						$(this).css("background-color", "#DC7633");
+					}
+					else
+					{
+						var valor = accounting.unformat($("#valor").val()) + servico.valor;
+						
+						$("#valor").val(accounting.formatMoney(valor));
+						
+						$(this).addClass("selecionado");
+						
+						$(this).css("background-color", "#2980B9");
+					}
+				});
+			});
+		});
+		
+		$('#confirme-agendamento').on('hide.bs.modal', function(){
+			$("#valor").val(accounting.formatMoney(0));
+			
+			$("#tabela-horarios").removeData("EMAGENDAMENTO");
+		});
+		
+		$("#btnAgendar").on("click", function(){
+			var usuarioLogado = JSON.parse($("#tabela-horarios").data("USUARIOLOGADO"));
+			
+			var dados = {
+					idAgendamento: $("#tabela-horarios").data("EMAGENDAMENTO"),
+					idUsuario: usuarioLogado.id,
+					valor: accounting.unformat($("#valor").val())
+				};
+			
+			debugger;
+			
+			$.ajax({
+				url: "efetueagendamento",
+				method: "POST",
+				contentType: "application/json",
+				processData: false,
+				data: JSON.stringify(dados),
+				success: function(){
+					$('#confirme-agendamento').modal('hide');
+					$("#tabela-horarios tbody").html("");
+					carregueDadosDaTabela();
+				},
+				error: function(erro){
+				}
+			});
+		});
 	});
 })(jQuery)

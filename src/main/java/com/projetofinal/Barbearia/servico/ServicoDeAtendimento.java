@@ -41,8 +41,8 @@ public class ServicoDeAtendimento {
 		return (List<Atendimento>) repositorio.saveAll(atendimentos);
 	}
 
-	public boolean atualize(Long id, Long idUsuario) {
-		return repositorio.atualize(id, idUsuario);
+	public boolean atualize(Long id, Long idUsuario, Float valor) {
+		return repositorio.atualize(id, idUsuario, valor);
 	}
 
 	public List<Atendimento> consultePorFuncionario(Long idFuncionario){
