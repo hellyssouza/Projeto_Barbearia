@@ -161,14 +161,19 @@
 		
 		$("#btnAgendar").on("click", function(){
 			var usuarioLogado = JSON.parse($("#tabela-horarios").data("USUARIOLOGADO"));
+			var valor = accounting.unformat($("#valor").val());
+			
+			if(valor == "0" || valor == "")
+			{
+				$("#valor").notify("Não foi selecionado nenum serviço!", { className: 'error', position: "bottom lefth" });
+				return;
+			}
 			
 			var dados = {
 					idAgendamento: $("#tabela-horarios").data("EMAGENDAMENTO"),
 					idUsuario: usuarioLogado.id,
-					valor: accounting.unformat($("#valor").val())
+					valor: valor
 				};
-			
-			debugger;
 			
 			$.ajax({
 				url: "efetueagendamento",
