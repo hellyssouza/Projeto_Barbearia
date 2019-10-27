@@ -6,6 +6,7 @@
 	var tabela = $("#tabela tbody");
 	
 	var adicioneItemNaTabela = function(objeto){
+		debugger;
 		var dataEHora = objeto.DataEHorario.replace("T"," ").split(" ");
 		
 		var funcionarios = Object.values(JSON.parse($("#tabela-horarios").data("FUNCIONARIOS")));
@@ -38,14 +39,6 @@
 			$(this).addClass("selecionado")
 			$(this).addClass("bg-light");
 		});
-		
-		var dados = $("#tabela-horarios").data();
-		
-		var objetos = Object.values(dados); 
-		
-		objetos.push(objeto);
-		
-		$("#tabela-horarios").data(objetos);
 	}
 	
 	var adicioneColunaStatus = function(selectorLinha, objeto){
@@ -117,7 +110,7 @@
 	var removaItemDaTabela = function(objetos){
 		$("#tabela-horarios").removeData();
 		
-		$("#tabela-horarios").data(objetos);
+		$("#tabela-horarios").data("ATENDIMENTOS", objetos);
 		
 		$(".selecionado").remove();
 	}
@@ -145,7 +138,7 @@
 	}
 	
 	$(botaoRemover).on("click", function(){
-		var dados = $("#tabela-horarios").data();
+		var dados = $("#tabela-horarios").data("ATENDIMENTOS");
 		
 		var indiceRemover = parseInt($(".selecionado [scope='row']").html());
 		
@@ -195,7 +188,17 @@
 			processData: false,
 			data: JSON.stringify(objeto),
 			success: function(dados){
-				dados.forEach(atendimento => adicioneItemNaTabela(atendimento));
+				dados.forEach(atendimento => {
+					adicioneItemNaTabela(atendimento);
+					
+					var objetos = Object.values($("#tabela-horarios").data("ATENDIMENTOS"))
+					
+					objetos.push(atendimento);
+					
+					$("#tabela-horarios").removeData("ATENDIMENTOS");
+					
+					$("#tabela-horarios").data("ATENDIMENTOS", objetos);
+				});
 				limpaCampos();
 			},
 			error: function(erro){
@@ -216,8 +219,18 @@
 			$.get("consulteatendimentos", function(dados, status){
 				var objetos = JSON.parse(dados);
 				
+				$("#tabela-horarios").data("ATENDIMENTOS", objetos);
+				
 				objetos.forEach(atendimento => adicioneItemNaTabela(atendimento));
 			});
+		});
+		
+		$("#filtro").on("keyup", function() {
+		    var value = $(this).val().toLowerCase();
+		    
+		    $("#tabela-horarios tbody tr").filter(function() {
+		      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+		    });
 		});
 	});
 })(jQuery)

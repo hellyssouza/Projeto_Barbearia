@@ -41,12 +41,25 @@
 		$("#funcionarios").append(opcao);
 	}
 	
+	var preenchaListaDeUsuarios = function(){
+		$.get("consulteusuarios", function(dados, status){
+			var objetos = JSON.parse(dados);
+			
+			objetos.forEach(usuario => adicioneNaLista(usuario));
+		});
+	}
+	
 	var removaItemDaTabela = function(objetos){
 		$("#tabela-funcionarios").removeData();
 		
 		$("#tabela-funcionarios").data(objetos);
 		
 		$(".selecionado").remove();
+	}
+	
+	var removaTodosUsuariosEAdicioneNovamente = function(){
+		$("#funcionarios").empty();
+		preenchaListaDeUsuarios();
 	}
 	
 	var limpeCampos = function(){
@@ -65,6 +78,7 @@
 		
 		return false;
 	}
+	
 	$(botaoRemover).on("click", function(){
 		var dados = $("#tabela-funcionarios").data();
 		
@@ -86,6 +100,7 @@
 			data: JSON.stringify(objeto),
 			success: function(){
 				removaItemDaTabela(objetos);
+				removaTodosUsuariosEAdicioneNovamente();
 			},
 			error: function(erro){
 			}
@@ -115,10 +130,10 @@
 			data: dados,
 			success: function(resultado){
 				adicioneItemNaTabela(resultado);
+				removaTodosUsuariosEAdicioneNovamente();
 				limpeCampos();
 			},
 			error: function(erro){
-				
 			}
 		});
 	});
@@ -130,10 +145,14 @@
 			objetos.forEach(funcionario => adicioneItemNaTabela(funcionario));
 		});
 		
-		$.get("consulteusuarios", function(dados, status){
-			var objetos = JSON.parse(dados);
-			
-			objetos.forEach(usuario => adicioneNaLista(usuario));
+		preenchaListaDeUsuarios();
+		
+		$("#filtro").on("keyup", function() {
+		    var value = $(this).val().toLowerCase();
+		    
+		    $("#tabela-funcionarios tbody tr").filter(function() {
+		      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+		    });
 		});
 	});
 })(jQuery)

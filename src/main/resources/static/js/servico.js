@@ -123,5 +123,13 @@
 			
 			objetos.forEach(servico => adicioneItemNaTabela(servico));
 		});
+		
+		$("#filtro").on("keyup", function() {
+		    var value = $(this).val().toLowerCase();
+		    
+		    $("#tabela-servicos tbody tr").filter(function() {
+		      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+		    });
+		});
 	});
 })(jQuery)
