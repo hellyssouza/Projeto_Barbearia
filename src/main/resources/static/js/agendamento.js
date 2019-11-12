@@ -122,6 +122,7 @@
 			
 			servicos.forEach(servico => {
 				var caixaServico = "<div class='col-lg-2 text-white caixa-agendamento' id='caixa-servico-" + servico.id + "'>";
+				caixaServico += "<div hidden>" + servico.id + "</div>";
 				caixaServico += "<div>" + servico.nome + "</div>";
 				caixaServico += "<div>" + accounting.formatMoney(servico.valor) +"</div>";
 				caixaServico += "</div>";
@@ -172,6 +173,7 @@
 			var dados = {
 					idAgendamento: $("#tabela-horarios").data("EMAGENDAMENTO"),
 					idUsuario: usuarioLogado.id,
+					servicos: Array.from($(".selecionado div:hidden").map(function(){ return parseInt(this.innerText); })),
 					valor: valor
 				};
 			

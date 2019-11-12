@@ -11,6 +11,42 @@
 </head>
 <body class="bg-light">
 	<div th:replace="template :: header"></div>
+
+	<div class="modal fade" id="modal-info-agendamento" tabindex="-1"
+		role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Agendamento</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col">
+							<h4 class="nome-cliente text-center"></h4>
+						</div>
+					</div>
+					<ul class="lista-de-servicos list-group">
+					</ul>
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text" id="basic-addon1">Total</span>
+						</div>
+						<input type="text"
+							class="form-control text-center valor-total-agendamento" disabled>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger btn-cancelar">Cancelar</button>
+					<button type="button" class="btn btn-primary btn-atender">Atender</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="card">
 		<div class="card-header text-center">
 			<p class="text-info" style="display: inline;">ATENDIMENTOS</p>
@@ -41,12 +77,12 @@
 			<div class="table-responsive-sm table-bordered table-hover">
 				<div class="input-group">
 					<div class="input-group-prepend">
-					    <span class="input-group-text">Filtro</span>
+						<span class="input-group-text">Filtro</span>
 					</div>
-					
-					<input id="filtro" class="form-control"/>
+
+					<input id="filtro" class="form-control" />
 				</div>
-				
+
 				<table id="tabela-horarios" class="table">
 					<thead class="thead-dark">
 						<tr>

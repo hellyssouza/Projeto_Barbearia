@@ -24,24 +24,23 @@ public class Atendimento {
 	@Column(name = "USUARIO")
 	private Long Usuario;
 
-	@Column(name = "VALOR")
-	private Float Valor;
+	@Column(name = "STATUS")
+	private Integer Status;
 
 	public Atendimento() {
 	}
 
-	public Atendimento(String dataEHorarario, Long funcionario, Float valor) {
+	public Atendimento(String dataEHorarario, Long funcionario) {
 		this.DataEHorario = dataEHorarario;
 		this.Funcionario = funcionario;
-		this.Valor = valor;
 	}
 
-	public Float getValor() {
-		return Valor;
+	public Integer getStatus() {
+		return Status;
 	}
 
-	public void setValor(Float valor) {
-		Valor = valor;
+	public void setStatus(Integer status) {
+		this.Status = status;
 	}
 
 	public Long getUsuario() {
@@ -77,6 +76,6 @@ public class Atendimento {
 	}
 
 	public Atendimento clone() {
-		return new Atendimento(this.DataEHorario, this.Funcionario, this.Valor);
+		return new Atendimento(this.DataEHorario, this.Funcionario);
 	}
 }

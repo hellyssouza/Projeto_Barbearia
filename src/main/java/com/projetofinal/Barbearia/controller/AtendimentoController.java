@@ -82,7 +82,7 @@ public class AtendimentoController {
 		}
 		else 
 		{
-			atendimentos = servicoDeAtendimento.consulteTodos();
+			atendimentos = servicoDeAtendimento.consulteTodosNaoAtendidos();
 		}
 
 		return ResponseEntity.ok().body(conversor.toJson(atendimentos));
@@ -95,16 +95,5 @@ public class AtendimentoController {
 		Usuario usuario = servicoDeUsuario.obtenhaUsuarioPeloId(objetoJson.get("id").getAsLong());
 		
 		return ResponseEntity.ok().body(conversor.toJson(usuario));
-	}
-	
-	@RequestMapping(value = "/canceleatendimento", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> cancele(@RequestBody String conteudo) {
-		Atendimento atendimento = conversor.fromJson(conteudo, Atendimento.class);
-		
-		servicoDeAtendimento.atualize(atendimento.getId(), null, Float.parseFloat("0"));
-		
-		atendimento.setUsuario(null);
-		
-		return ResponseEntity.ok().body(conversor.toJson(atendimento));
 	}
 }

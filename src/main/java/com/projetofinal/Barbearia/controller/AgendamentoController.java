@@ -1,5 +1,8 @@
 package com.projetofinal.Barbearia.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,7 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.projetofinal.Barbearia.enumerador.StatusAtendimento;
+import com.projetofinal.Barbearia.negocio.Servico;
 import com.projetofinal.Barbearia.negocio.Usuario;
 import com.projetofinal.Barbearia.servico.ServicoDeAtendimento;
 import com.projetofinal.Barbearia.servico.ServicoDeUsuario;
@@ -43,17 +49,36 @@ public class AgendamentoController {
 	}
 	
 	@ResponseBody
+	@RequestMapping(value = "/consulteservicosdoatendimento", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> consulteServicosDoAtendimento(@RequestBody String conteudo)
+	{
+		JsonObject jsonObjeto = conversor.fromJson(conteudo, JsonObject.class);
+		
+		Long idAgendamento = jsonObjeto.get("idAgendamento").getAsLong();
+		
+		List<Servico> servicos = servico.consulteServicosDoAtendimento(idAgendamento);
+		
+		return ResponseEntity.ok().body(conversor.toJson(servicos));
+	}
+	
+	@ResponseBody
 	@RequestMapping(value = "/efetueagendamento", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> cadastre(@RequestBody String conteudo) {
 		JsonObject jsonObjeto = conversor.fromJson(conteudo, JsonObject.class);
+		
+		List<Integer> idsServico = new ArrayList<Integer>();
 		
 		Long idAgendamento = jsonObjeto.get("idAgendamento").getAsLong(); 
 		
 		Long idUsuario = jsonObjeto.get("idUsuario").getAsLong();
 		
-		Float valor = jsonObjeto.get("valor").getAsFloat();
+		JsonArray servicos = jsonObjeto.getAsJsonArray("servicos");
 		
-		servico.atualize(idAgendamento, idUsuario, valor);
+		servicos.spliterator().forEachRemaining(x -> idsServico.add(x.getAsInt()));
+		
+		servico.atualize(idAgendamento, idUsuario, idsServico);
+		
+		servico.atualize(idAgendamento, StatusAtendimento.AGENDADO);
 		
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
@@ -65,7 +90,23 @@ public class AgendamentoController {
 		
 		Long idAgendamento = jsonObjeto.get("idAgendamento").getAsLong(); 
 		
-		servico.atualize(idAgendamento, null, Float.parseFloat("0"));
+		servico.excluaAgendamento(idAgendamento);
+		
+		return new ResponseEntity<String>(HttpStatus.OK);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/atulizestatus", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> atualizeStatus(@RequestBody String conteudo) {
+		JsonObject jsonObjeto = conversor.fromJson(conteudo, JsonObject.class);
+		
+		Long idAgendamento = jsonObjeto.get("idAgendamento").getAsLong(); 
+		
+		StatusAtendimento status = StatusAtendimento.LIVRE;
+		
+		status.setCodigo(jsonObjeto.get("statusAgendamento").getAsInt());
+		
+		servico.atualize(idAgendamento, status);
 		
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}

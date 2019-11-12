@@ -1,5 +1,6 @@
 package com.projetofinal.Barbearia.repositorio;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
+import com.projetofinal.Barbearia.enumerador.StatusAtendimento;
 import com.projetofinal.Barbearia.negocio.Atendimento;
+import com.projetofinal.Barbearia.negocio.Servico;
 
 @Repository
 @EnableJpaRepositories(basePackageClasses = { AtendimentorRepositorio.class })
@@ -22,15 +25,47 @@ public class RepositorioDeAtendimentoImpl implements AtendimentorRepositorio {
 	@Autowired
 	private EntityManagerFactory fabricaDeEntityManager;
 
-	public boolean atualize(Long id, Long idUsuario, Float valor) {
+	public boolean atualize(Long id, Long idUsuario, List<Integer> servicos) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
 		boolean sucesso = false;
 
-		Query update = entityManager.createQuery("UPDATE Atendimento SET Usuario = :usuario, Valor = :valor where Id = :id");
+		Query update = entityManager.createQuery("UPDATE Atendimento SET Usuario = :usuario where Id = :id");
+
+		Query insert = entityManager.createNativeQuery(
+				"INSERT INTO ATENDIMENTO_SERVICO(IDATENDIMENTO,IDSERVICO) VALUES(:atendimento,:servico)");
 
 		update.setParameter("usuario", idUsuario);
 		update.setParameter("id", id);
-		update.setParameter("valor", valor);
+
+		try {
+			entityManager.getTransaction().begin();
+			update.executeUpdate();
+
+			for (Integer servico : servicos) {
+				insert.setParameter("atendimento", id);
+				insert.setParameter("servico", servico);
+				insert.executeUpdate();
+			}
+
+			entityManager.getTransaction().commit();
+			sucesso = true;
+		} catch (Exception exception) {
+			entityManager.getTransaction().rollback();
+		} finally {
+			entityManager.close();
+		}
+
+		return sucesso;
+	}
+	
+	public boolean atualize(Long id, StatusAtendimento status) {
+		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
+		boolean sucesso = false;
+
+		Query update = entityManager.createQuery("UPDATE Atendimento SET Status = :status where Id = :id");
+		
+		update.setParameter("status", status.getCodigo());
+		update.setParameter("id", id);
 
 		try {
 			entityManager.getTransaction().begin();
@@ -39,12 +74,63 @@ public class RepositorioDeAtendimentoImpl implements AtendimentorRepositorio {
 			sucesso = true;
 		} catch (Exception exception) {
 			entityManager.getTransaction().rollback();
-		}
-		finally {
+		} finally {
 			entityManager.close();
 		}
-		
+
 		return sucesso;
+	}
+	
+	public void exclua(Long id) {
+		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
+		Query update = entityManager.createQuery("UPDATE Atendimento SET Usuario = :usuario,Status = :status where Id = :id");
+		Query delete = entityManager.createNativeQuery("DELETE FROM ATENDIMENTO_SERVICO WHERE IDATENDIMENTO = :id");
+
+		update.setParameter("usuario", null);
+		update.setParameter("id", id);
+		update.setParameter("status", StatusAtendimento.LIVRE.getCodigo());
+		delete.setParameter("id", id);
+
+		try {
+			entityManager.getTransaction().begin();
+			update.executeUpdate();
+			delete.executeUpdate();
+			entityManager.getTransaction().commit();
+		} catch (Exception exception) {
+			entityManager.getTransaction().rollback();
+		} finally {
+			entityManager.close();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Servico> consulteServicosDoAtendimento(Long id) {
+		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
+		List<Servico> servicos = new ArrayList<Servico>();
+		Query select = entityManager
+				.createNativeQuery("SELECT SERVICO.* FROM ATENDIMENTO INNER JOIN ATENDIMENTO_SERVICO \r\n"
+						+ "ON ATENDIMENTO.ID = ATENDIMENTO_SERVICO.IDATENDIMENTO INNER JOIN SERVICO \r\n"
+						+ "ON ATENDIMENTO_SERVICO.IDSERVICO = SERVICO.ID " + "WHERE ATENDIMENTO.ID = :id");
+
+		select.setParameter("id", id);
+
+		try {
+			List<Object[]> lista = select.getResultList();
+			
+			lista.forEach(x -> {
+				Servico servico = new Servico();
+				servico.setId(Long.parseLong(x[0].toString()));
+				servico.setNome((String) x[1]);
+				servico.setValor(Float.parseFloat(x[2].toString()));
+				servicos.add(servico);
+			});
+		} catch (Exception exception) {
+			entityManager.getTransaction().rollback();
+		} finally {
+			entityManager.close();
+		}
+
+		return servicos;
 	}
 
 	public List<Atendimento> consultePorFuncionario(Long idFuncionario) {
@@ -54,14 +140,29 @@ public class RepositorioDeAtendimentoImpl implements AtendimentorRepositorio {
 				.createQuery("select at from Atendimento at where at.Funcionario = :id", Atendimento.class);
 
 		query.setParameter("id", idFuncionario);
-		
+
 		List<Atendimento> atendimentos = query.getResultList();
-		
+
 		entityManager.close();
-		
+
 		return atendimentos;
 	}
+	
+	public List<Atendimento> consulteTodosNaoAtendidos() {
+		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
 
+		TypedQuery<Atendimento> query = entityManager
+				.createQuery("select at from Atendimento at where at.Status <> :status", Atendimento.class);
+
+		query.setParameter("status", StatusAtendimento.ATENDIDO.getCodigo());
+
+		List<Atendimento> atendimentos = query.getResultList();
+
+		entityManager.close();
+
+		return atendimentos;
+	}
+	
 	@Override
 	public <S extends Atendimento> S save(S atendimento) {
 		return repositorio.save(atendimento);

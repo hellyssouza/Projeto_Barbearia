@@ -14,13 +14,22 @@ public class Servico {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID")
 	private Long id;
-	
+
 	@Column(name = "NOME")
 	private String nome;
 
 	@Column(name = "VALOR")
 	private Float valor;
-	
+
+	public Servico() {
+	}
+
+	public Servico(Long id, String nome, Float valor) {
+		this.id = id;
+		this.nome = nome;
+		this.valor = valor;
+	}
+
 	public Long getId() {
 		return id;
 	}

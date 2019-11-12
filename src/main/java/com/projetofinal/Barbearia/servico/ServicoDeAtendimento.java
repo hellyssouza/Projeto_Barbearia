@@ -7,8 +7,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.projetofinal.Barbearia.enumerador.StatusAtendimento;
 import com.projetofinal.Barbearia.negocio.Atendimento;
 import com.projetofinal.Barbearia.negocio.GeradorDeHorarios;
+import com.projetofinal.Barbearia.negocio.Servico;
 import com.projetofinal.Barbearia.repositorio.RepositorioDeAtendimentoImpl;
 
 @Service
@@ -20,18 +22,17 @@ public class ServicoDeAtendimento {
 		return repositorio.save(atendimento);
 	}
 
-	public List<Atendimento> cadastre(Atendimento atendimento, String horarioDeInicio, String horarioDeFim,
-			String periodo) {
+	public List<Atendimento> cadastre(Atendimento atendimento, String horarioDeInicio, String horarioDeFim, String periodo) {
 		List<Atendimento> atendimentos = new ArrayList<Atendimento>();
 		GeradorDeHorarios gerenciador = new GeradorDeHorarios();
 
 		try {
-			List<String> horarios = gerenciador.gere(atendimento.getDataEHorario(), horarioDeInicio, horarioDeFim,
-					periodo);
-			
+			List<String> horarios = gerenciador.gere(atendimento.getDataEHorario(), horarioDeInicio, horarioDeFim, periodo);
+
 			for (String horario : horarios) {
 				Atendimento atendimentoAuxiliar = atendimento.clone();
 				atendimentoAuxiliar.setDataEHorario(horario);
+				atendimentoAuxiliar.setStatus(StatusAtendimento.LIVRE.getCodigo());
 				atendimentos.add(atendimentoAuxiliar);
 			}
 		} catch (ParseException e) {
@@ -40,13 +41,29 @@ public class ServicoDeAtendimento {
 
 		return (List<Atendimento>) repositorio.saveAll(atendimentos);
 	}
-
-	public boolean atualize(Long id, Long idUsuario, Float valor) {
-		return repositorio.atualize(id, idUsuario, valor);
+	
+	public boolean atualize(Long id, StatusAtendimento status) {
+		return repositorio.atualize(id, status);
+	}
+	
+	public boolean atualize(Long id, Long idUsuario, List<Integer> servicos) {
+		return repositorio.atualize(id, idUsuario, servicos);
 	}
 
-	public List<Atendimento> consultePorFuncionario(Long idFuncionario){
+	public List<Servico> consulteServicosDoAtendimento(Long id) {
+		return repositorio.consulteServicosDoAtendimento(id);
+	}
+
+	public void excluaAgendamento(Long id) {
+		repositorio.exclua(id);
+	}
+
+	public List<Atendimento> consultePorFuncionario(Long idFuncionario) {
 		return repositorio.consultePorFuncionario(idFuncionario);
+	}
+	
+	public List<Atendimento> consulteTodosNaoAtendidos(){
+		return repositorio.consulteTodosNaoAtendidos();
 	}
 	
 	public List<Atendimento> consulteTodos() {
