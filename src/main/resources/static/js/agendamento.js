@@ -4,6 +4,12 @@
 	
 	var crieColunasDaTabela = function(objeto)
 	{
+		var colunaatendido = "<td><span class='badge badge-success'>{Descricao}</span></td>";
+		
+		var status = { LIVRE: 1, AGENDADO: 2, ATENDIDO: 3};
+		
+		var pagamento = { DINHEIRO: 1, CARTAO: 2};
+		
 		var dadosDosFuncionarios = JSON.parse($("#tabela-horarios").data("FUNCIONARIOS"));
 		
 		var usuarioLogado = JSON.parse($("#tabela-horarios").data("USUARIOLOGADO"));
@@ -30,20 +36,22 @@
 		
 		var colunaBotao = ""
 		
-		if(objeto.Usuario === null)
+		switch(objeto.Status)
 		{
-			colunaBotao = "<td><a id='agendar_"+ objeto.Id +"' class='badge badge-info'>Agendar</a></td>";
-		}
-		else
-		{
-			if(usuarioLogado.id !== objeto.Usuario)
-			{
-				colunaBotao = "<td><span id='agendado_"+ objeto.Id +"' class='badge badge-warning'>Agendado</span></td>";
-			}
-			else
-			{
+			case status.LIVRE: 
+				colunaBotao = "<td><a id='agendar_"+ objeto.Id +"' class='badge badge-info'>Agendar</a></td>";
+				break;
+			case status.AGENDADO:
 				colunaBotao = "<td><span id='cancelar_"+ objeto.Id +"' class='badge badge-danger'>Cancelar</span></td>";
-			}
+				break;
+			case status.ATENDIDO: 
+				var coluna = "<td><div><div>{Status}</div><div>{Pagamento}</div><div>{Valor}</div></div></td>";
+				coluna = coluna.replace("{Status}", colunaatendido.replace("{Descricao}", "Atendido").replace("<td>", "").replace("</td>", ""))
+				var pagamento = objeto.Pagamento == pagamento.DINHEIRO ? "DINHEIRO" : "CARTAO";
+				coluna = coluna.replace("{Pagamento}", colunaatendido.replace("{Descricao}", pagamento).replace("<td>", "").replace("</td>", ""));
+				coluna = coluna.replace("{Valor}", colunaatendido.replace("{Descricao}", accounting.formatMoney(objeto.Valor)).replace("<td>", "").replace("</td>", ""));
+				colunaBotao = coluna;
+				break;
 		}
 		
 		var colunas = [colunaId, colunaData, colunaHora, colunaFuncionario, colunaBotao];
@@ -104,7 +112,7 @@
 		$.get("consultefuncionarios", function(dados, status){
 			$("#tabela-horarios").data("FUNCIONARIOS", dados);
 			
-			$.get("consulteatendimentos", function(dados, status){
+			$.get("consulteatendimentosparausuario", function(dados, status){
 				var objetos = JSON.parse(dados);
 				
 				objetos.forEach(atendimento => adicioneItemNaTabela(atendimento));

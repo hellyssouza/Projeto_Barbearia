@@ -25,27 +25,29 @@ public class RepositorioDeAtendimentoImpl implements AtendimentorRepositorio {
 	@Autowired
 	private EntityManagerFactory fabricaDeEntityManager;
 
-	public boolean atualize(Long id, Long idUsuario, List<Integer> servicos) {
+	public boolean atualize(Long id, Long idUsuario, List<Integer> servicos, Float valor) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
 		boolean sucesso = false;
 
-		Query update = entityManager.createQuery("UPDATE Atendimento SET Usuario = :usuario where Id = :id");
+		Query update = entityManager.createQuery("UPDATE Atendimento SET Usuario = :usuario, Valor = :valor where Id = :id");
 
 		Query insert = entityManager.createNativeQuery(
 				"INSERT INTO ATENDIMENTO_SERVICO(IDATENDIMENTO,IDSERVICO) VALUES(:atendimento,:servico)");
 
-		update.setParameter("usuario", idUsuario);
-		update.setParameter("id", id);
 
 		try {
 			entityManager.getTransaction().begin();
-			update.executeUpdate();
-
+			
 			for (Integer servico : servicos) {
 				insert.setParameter("atendimento", id);
 				insert.setParameter("servico", servico);
 				insert.executeUpdate();
 			}
+			
+			update.setParameter("usuario", idUsuario);
+			update.setParameter("id", id);
+			update.setParameter("valor", valor);
+			update.executeUpdate();
 
 			entityManager.getTransaction().commit();
 			sucesso = true;
@@ -58,15 +60,16 @@ public class RepositorioDeAtendimentoImpl implements AtendimentorRepositorio {
 		return sucesso;
 	}
 	
-	public boolean atualize(Long id, StatusAtendimento status) {
+	public boolean atualize(Long id, StatusAtendimento status, Integer pagamento) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
 		boolean sucesso = false;
 
-		Query update = entityManager.createQuery("UPDATE Atendimento SET Status = :status where Id = :id");
+		Query update = entityManager.createQuery("UPDATE Atendimento SET Status = :status,Pagamento = :pagamento where Id = :id");
 		
 		update.setParameter("status", status.getCodigo());
 		update.setParameter("id", id);
-
+		update.setParameter("pagamento", pagamento);
+		
 		try {
 			entityManager.getTransaction().begin();
 			update.executeUpdate();
@@ -83,12 +86,13 @@ public class RepositorioDeAtendimentoImpl implements AtendimentorRepositorio {
 	
 	public void exclua(Long id) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
-		Query update = entityManager.createQuery("UPDATE Atendimento SET Usuario = :usuario,Status = :status where Id = :id");
+		Query update = entityManager.createQuery("UPDATE Atendimento SET Usuario = :usuario,Status = :status,Valor = :valor where Id = :id");
 		Query delete = entityManager.createNativeQuery("DELETE FROM ATENDIMENTO_SERVICO WHERE IDATENDIMENTO = :id");
 
 		update.setParameter("usuario", null);
 		update.setParameter("id", id);
 		update.setParameter("status", StatusAtendimento.LIVRE.getCodigo());
+		update.setParameter("valor", null);
 		delete.setParameter("id", id);
 
 		try {
@@ -148,13 +152,13 @@ public class RepositorioDeAtendimentoImpl implements AtendimentorRepositorio {
 		return atendimentos;
 	}
 	
-	public List<Atendimento> consulteTodosNaoAtendidos() {
+	public List<Atendimento> consulteTodosPorUsuario(Long idUsuario) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
 
 		TypedQuery<Atendimento> query = entityManager
-				.createQuery("select at from Atendimento at where at.Status <> :status", Atendimento.class);
+				.createQuery("select at from Atendimento at where at.Usuario = :usuario OR at.Usuario IS NULL", Atendimento.class);
 
-		query.setParameter("status", StatusAtendimento.ATENDIDO.getCodigo());
+		query.setParameter("usuario", idUsuario);
 
 		List<Atendimento> atendimentos = query.getResultList();
 

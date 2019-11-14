@@ -82,7 +82,7 @@ public class RepositorioDeUsuarioImpl implements UsuarioRepositorio {
 	public List<Usuario> consulteTodos() {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
 
-		Query query = entityManager.createQuery("SELECT u.id,u.nome FROM Usuario u where u.funcionario IS NULL");
+		Query query = entityManager.createQuery("SELECT u.id,u.nome FROM Usuario u where u.funcionario IS NULL AND u.permissao <> 1");
 		
 		List<Usuario> ususarios = query.getResultList();
 		

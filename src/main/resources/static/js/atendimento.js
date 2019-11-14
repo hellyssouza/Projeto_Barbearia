@@ -1,10 +1,11 @@
 var MODULO = (function(modulo, $){
 	modulo.atendimento = {};
 	
-	modulo.atendimento.colunaatendido = "<td><span class='badge badge-success'>Atendido</span></td>";
+	modulo.atendimento.colunaatendido = "<td><span class='badge badge-success'>{Descricao}</span></td>";
 	modulo.atendimento.colunalivre = "<td><span class='badge badge-info'>Livre</span></td>";
 	modulo.atendimento.modalatendimento = $("#modal-info-agendamento");
 	modulo.atendimento.status = { LIVRE: 1, AGENDADO: 2, ATENDIDO: 3};
+	modulo.atendimento.pagamento = { DINHEIRO: 1, CARTAO: 2};
 	modulo.atendimento.comboFuncionarios = $("#funcionarios");
 	modulo.atendimento.data = document.getElementById("data");
 	modulo.atendimento.botaoCancelar = $(".btn-cancelar");
@@ -29,7 +30,7 @@ var MODULO = (function(modulo, $){
 		
 		var colunaHora = "<td>" + horaFormatada + "</td>";
 		
-		var colunaFuncionario = "<td>" + modulo.atendimento.funcionarios.filter(x=> x.Id == objeto.Funcionario)[0].Nome + "</td>";
+		var colunaFuncionario = "<td>" + modulo.atendimento.funcionarios.filter(x => x.Id == objeto.Funcionario)[0].Nome + "</td>";
 		
 		var linha = "<tr name='"+ "linha_" + objeto.Id +"'>" + colunaId + colunaData + colunaHora + colunaFuncionario +"</tr>";
 		
@@ -55,14 +56,13 @@ var MODULO = (function(modulo, $){
 	}
 	
 	modulo.atendimento.crieColunaEAdicioneNaTabela = function(selectorLinha, objeto, usuario, servicos){
-		var valorTotal = eval(servicos.map(x => x.valor).join("+"));
 		var classe = modulo.atendimento.gereGuid();
 		var colunaStatus = "<td class='coluna_" + classe +"'><span class='badge badge-warning " + classe + "'>Agendado</span></td>";
 		
 		$(selectorLinha).append(colunaStatus);
 		
 		$("." + classe).on("click", function(){
-			$(".valor-total-agendamento").val(accounting.formatMoney(valorTotal));
+			$(".valor-total-agendamento").val(accounting.formatMoney(objeto.Valor));
 			
 			$(selectorLinha).click();
 			
@@ -73,11 +73,11 @@ var MODULO = (function(modulo, $){
 			servicos.forEach(servico => {
 				$(".lista-de-servicos").append("<li class='list-group-item d-flex justify-content-between align-items-center'>" 
 										+ servico.nome + "<span class='badge badge-primary badge-pill'> " 
-										+ accounting.formatMoney(servico.valor) + "</span>" +"</li>");
+										+ accounting.formatMoney(objeto.Valor) + "</span>" +"</li>");
 			});
 			
-			modulo.atendimento.modalatendimento.modal("show");
-			
+			modulo.atendimento.seletorcolunacontexto = ".coluna_" + classe;
+			modulo.atendimento.modalatendimento.modal("show");			
 			modulo.atendimento.atendimentocontexto = objeto;
 			modulo.atendimento.colunacontexto = classe;
 		});
@@ -90,7 +90,14 @@ var MODULO = (function(modulo, $){
 				$(selectorLinha).append(modulo.atendimento.colunalivre);
 				break;
 			case modulo.atendimento.status.ATENDIDO:
-				$(selectorLinha).append(modulo.atendimento.colunaatendido);
+				var coluna = "<td><div><div>{Status}</div><div>{Pagamento}</div><div>{Valor}</div></div></td>";
+				var porcentagem = modulo.atendimento.funcionarios.filter(x => x.Id == objeto.Funcionario)[0].Porcentagem / 100;
+				coluna = coluna.replace("{Status}", modulo.atendimento.colunaatendido.replace("{Descricao}", "Atendido").replace("<td>", "").replace("</td>", ""))
+				var pagamento = objeto.Pagamento == modulo.atendimento.pagamento.DINHEIRO ? "DINHEIRO" : "CARTAO";
+				coluna = coluna.replace("{Pagamento}", modulo.atendimento.colunaatendido.replace("{Descricao}", "Pagamento: " + pagamento).replace("<td>", "").replace("</td>", ""));
+				coluna = coluna.replace("{Valor}", modulo.atendimento.colunaatendido.replace("{Descricao}", "Porcentagem: " + accounting.formatMoney(objeto.Valor * porcentagem)).replace("<td>", "").replace("</td>", ""));
+				
+				$(selectorLinha).append(coluna);
 				break;
 			case modulo.atendimento.status.AGENDADO:
 				$.ajax({
@@ -161,9 +168,17 @@ var MODULO = (function(modulo, $){
 	
 	modulo.atendimento.associeAcoes = function(){
 		$(modulo.atendimento.botaoAtender).on("click", function(){
+			if($(".forma-de-pagamento").children("option:selected").val() == "")
+			{
+				$.notify("O tipo de pagamento não foi selecionado!", { className: 'error', position: "top lefth" });
+				
+				return;
+			}
+			
 			var objeto = { 
 					idAgendamento: modulo.atendimento.atendimentocontexto.Id,
-					statusAgendamento: modulo.atendimento.status.ATENDIDO
+					statusAgendamento: modulo.atendimento.status.ATENDIDO,
+					pagamento: $(".forma-de-pagamento").children("option:selected").val()
 			};
 			
 			$.ajax({
@@ -173,7 +188,16 @@ var MODULO = (function(modulo, $){
 				processData: false,
 				data: JSON.stringify(objeto),
 				success: function(){
-					modulo.atendimento.removaItemSelecionadoDaTabela();
+					modulo.atendimento.atendimentocontexto.Pagamento = $(".forma-de-pagamento").children("option:selected").val();
+					debugger;
+					var porcentagem = modulo.atendimento.funcionarios.filter(x => x.Id == modulo.atendimento.atendimentocontexto.Funcionario)[0].Porcentagem / 100;
+					var coluna = "<div><div>{Status}</div><div>{Pagamento}</div><div>{Valor}</div></div>";
+					coluna = coluna.replace("{Status}", modulo.atendimento.colunaatendido.replace("{Descricao}", "Atendido").replace("<td>", "").replace("</td>", ""))
+					var pagamento = modulo.atendimento.atendimentocontexto.Pagamento == modulo.atendimento.pagamento.DINHEIRO ? "DINHEIRO" : "CARTAO";
+					coluna = coluna.replace("{Pagamento}", modulo.atendimento.colunaatendido.replace("{Descricao}", "Pagamento: " + pagamento).replace("<td>", "").replace("</td>", ""));
+					coluna = coluna.replace("{Valor}", modulo.atendimento.colunaatendido.replace("{Descricao}", "Porcentagem: " + accounting.formatMoney(modulo.atendimento.atendimentocontexto.Valor * porcentagem)).replace("<td>", "").replace("</td>", ""))
+					$(modulo.atendimento.seletorcolunacontexto).children().remove();
+					$(modulo.atendimento.seletorcolunacontexto).append(coluna);
 					modulo.atendimento.modalatendimento.modal("hide");
 				},
 				error: function(erro){

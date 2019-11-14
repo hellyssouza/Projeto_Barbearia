@@ -26,10 +26,32 @@ public class Atendimento {
 
 	@Column(name = "STATUS")
 	private Integer Status;
-
+	
+	@Column(name = "PAGAMENTO")
+	private Integer Pagamento;
+	
+	@Column(name = "VALOR")
+	private Float Valor;
+	
 	public Atendimento() {
 	}
+	
+	public Integer getPagamento() {
+		return Pagamento;
+	}
 
+	public void setPagamento(Integer pagamento) {
+		Pagamento = pagamento;
+	}
+
+	public Float getValor() {
+		return Valor;
+	}
+
+	public void setValor(Float valor) {
+		Valor = valor;
+	}
+	
 	public Atendimento(String dataEHorarario, Long funcionario) {
 		this.DataEHorario = dataEHorarario;
 		this.Funcionario = funcionario;

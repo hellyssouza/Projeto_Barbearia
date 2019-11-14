@@ -72,13 +72,15 @@ public class AgendamentoController {
 		
 		Long idUsuario = jsonObjeto.get("idUsuario").getAsLong();
 		
+		Float valor = jsonObjeto.get("valor").getAsFloat();
+		
 		JsonArray servicos = jsonObjeto.getAsJsonArray("servicos");
 		
 		servicos.spliterator().forEachRemaining(x -> idsServico.add(x.getAsInt()));
 		
-		servico.atualize(idAgendamento, idUsuario, idsServico);
+		servico.atualize(idAgendamento, idUsuario, idsServico, valor);
 		
-		servico.atualize(idAgendamento, StatusAtendimento.AGENDADO);
+		servico.atualize(idAgendamento, StatusAtendimento.AGENDADO, null);
 		
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
@@ -102,11 +104,13 @@ public class AgendamentoController {
 		
 		Long idAgendamento = jsonObjeto.get("idAgendamento").getAsLong(); 
 		
+		Integer pagamento = jsonObjeto.get("pagamento").getAsInt();
+		
 		StatusAtendimento status = StatusAtendimento.LIVRE;
 		
 		status.setCodigo(jsonObjeto.get("statusAgendamento").getAsInt());
 		
-		servico.atualize(idAgendamento, status);
+		servico.atualize(idAgendamento, status, pagamento);
 		
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}

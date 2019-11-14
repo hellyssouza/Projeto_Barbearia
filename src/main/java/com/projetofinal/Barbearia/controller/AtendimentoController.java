@@ -82,8 +82,25 @@ public class AtendimentoController {
 		}
 		else 
 		{
-			atendimentos = servicoDeAtendimento.consulteTodosNaoAtendidos();
+			atendimentos = servicoDeAtendimento.consulteTodos();
 		}
+
+		return ResponseEntity.ok().body(conversor.toJson(atendimentos));
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/consulteatendimentosparausuario", method = RequestMethod.GET)
+	public ResponseEntity<String> consulteatendimentosparausuario() {
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		List<Atendimento> atendimentos = null;
+		
+		gsonBuilder.serializeNulls();
+
+		conversor = gsonBuilder.create();
+		
+		Long idUsuario = servicoDeUsuario.consulteIdDoUsuario();
+
+		atendimentos = servicoDeAtendimento.consulteTodosPorUsuario(idUsuario);
 
 		return ResponseEntity.ok().body(conversor.toJson(atendimentos));
 	}

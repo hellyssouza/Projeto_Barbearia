@@ -5,13 +5,16 @@
 	var tabela = $("#tabela tbody");
 	
 	var adicioneItemNaTabela = function(objeto){
+		debugger;
 		var colunaId = "<th scope='row'>" + objeto.Id + "</th>";
 		
 		var colunaNome = "<td>" + objeto.Nome + "</td>";
 		
 		var colunaCargo = "<td>" + objeto.Cargo + "</td>";
 		
-		var linha = "<tr name='"+ "linha_" + objeto.Id +"'>" + colunaId + colunaNome + colunaCargo + "</tr>"
+		var colunaPorcentagem = "<td>" + objeto.Porcentagem + "%" + "</td>";
+		
+		var linha = "<tr name='"+ "linha_" + objeto.Id +"'>" + colunaId + colunaNome + colunaCargo + colunaPorcentagem + "</tr>"
 		
 		$("#tabela-funcionarios > tbody").append(linha);
 		
@@ -69,7 +72,7 @@
 	
 	var valideCampos = function(){
 		if($("#funcionarios").children("option:selected").val() === "" || 
-		   $("#cargo").val() === "")
+		   $("#cargo").val() === "" || $("#porcentagem").val() === "")
 		{
 			$.notify("Existem campos que não foram preenchidos!", { className: 'error', position: "top lefth" });
 			
@@ -116,7 +119,8 @@
 				Id : 0, 
 				Nome : $('#funcionarios').find(":selected").text(), 
 				Cargo: $("#cargo").val(),
-				IdUsuario: $('#funcionarios').find(":selected").val()
+				IdUsuario: $('#funcionarios').find(":selected").val(),
+				Porcentagem: parseInt($('#porcentagem').val())
 		};
 		
 		var dados = JSON.stringify(objeto);

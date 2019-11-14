@@ -20,6 +20,17 @@ public class Funcionario {
 
 	@Column(name = "CARGO")
 	public String Cargo;
+	
+	@Column(name = "PORCENTAGEM")
+	public Integer Porcentagem;
+	
+	public Integer getPorcentagem() {
+		return Porcentagem;
+	}
+
+	public void setPorcentagem(Integer porcentagem) {
+		Porcentagem = porcentagem;
+	}
 
 	public String getCargo() {
 		return Cargo;
