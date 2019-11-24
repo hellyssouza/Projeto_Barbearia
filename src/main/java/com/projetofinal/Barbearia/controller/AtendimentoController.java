@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +19,16 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.projetofinal.Barbearia.negocio.Atendimento;
 import com.projetofinal.Barbearia.negocio.Usuario;
+import com.projetofinal.Barbearia.relatorio.GeradorDeRelatorioAtendimentos;
 import com.projetofinal.Barbearia.servico.ServicoDeAtendimento;
 import com.projetofinal.Barbearia.servico.ServicoDeUsuario;
 
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperPrint;
+
 @Controller
 public class AtendimentoController {
+	private GeradorDeRelatorioAtendimentos gerador = new GeradorDeRelatorioAtendimentos();
 	@Autowired
 	private ServicoDeAtendimento servicoDeAtendimento;
 	@Autowired
@@ -42,11 +48,10 @@ public class AtendimentoController {
 
 		String periodo = jsonObjeto.get("Periodo").getAsString();
 
-		if(horarioInicio.equals(horarioFim)) 
-		{
+		if (horarioInicio.equals(horarioFim)) {
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Intervalo de horários invalido!");
 		}
-		
+
 		List<Atendimento> atendimentos = servicoDeAtendimento.cadastre(atendimento, horarioInicio, horarioFim, periodo);
 
 		return ResponseEntity.ok().body(conversor.toJson(atendimentos));
@@ -63,54 +68,78 @@ public class AtendimentoController {
 	}
 
 	@ResponseBody
+	@RequestMapping(value = "/gererelatorio", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/pdf")
+	public ResponseEntity<byte[]> gereRelatorio(@RequestBody String conteudo) {
+		JsonObject jsonObjeto = conversor.fromJson(conteudo, JsonObject.class);
+		HttpHeaders headers = new HttpHeaders();
+		byte[] dados = null;
+		
+		try {
+			String data = jsonObjeto.get("data").getAsString();
+			Integer funcionario = jsonObjeto.get("funcionario").getAsInt();
+			Integer status = jsonObjeto.get("status").getAsInt();
+			Integer pagamento = jsonObjeto.get("pagamento").getAsInt();
+			
+			JasperPrint print = gerador.gereRelatorio(data, funcionario, status, pagamento);
+			
+			dados = JasperExportManager.exportReportToPdf(print);
+
+			headers.setContentType(MediaType.parseMediaType("application/pdf"));
+
+			headers.add("content-disposition", "inline; filename=" + "relatorio.pdf");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return new ResponseEntity<byte[]>(dados, headers, HttpStatus.OK);
+	}
+
+	@ResponseBody
 	@RequestMapping(value = "/consulteatendimentos", method = RequestMethod.GET)
 	public ResponseEntity<String> consulte() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		List<Atendimento> atendimentos = null;
-		
+
 		gsonBuilder.serializeNulls();
 
 		conversor = gsonBuilder.create();
-		
-		if(servicoDeUsuario.usuarioLogadoEFuncionario()) 
-		{
+
+		if (servicoDeUsuario.usuarioLogadoEFuncionario()) {
 			Long idUsuario = servicoDeUsuario.consulteIdDoUsuario();
-			
+
 			Long idFuncionario = servicoDeUsuario.consulteIdDeFuncionario(idUsuario);
-			
+
 			atendimentos = servicoDeAtendimento.consultePorFuncionario(idFuncionario);
-		}
-		else 
-		{
+		} else {
 			atendimentos = servicoDeAtendimento.consulteTodos();
 		}
 
 		return ResponseEntity.ok().body(conversor.toJson(atendimentos));
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/consulteatendimentosparausuario", method = RequestMethod.GET)
 	public ResponseEntity<String> consulteatendimentosparausuario() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		List<Atendimento> atendimentos = null;
-		
+
 		gsonBuilder.serializeNulls();
 
 		conversor = gsonBuilder.create();
-		
+
 		Long idUsuario = servicoDeUsuario.consulteIdDoUsuario();
 
 		atendimentos = servicoDeAtendimento.consulteTodosPorUsuario(idUsuario);
 
 		return ResponseEntity.ok().body(conversor.toJson(atendimentos));
 	}
-	
+
 	@RequestMapping(value = "/consulteusuario", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> consulte(@RequestBody String conteudo) {
 		JsonObject objetoJson = conversor.fromJson(conteudo, JsonObject.class);
-		
+
 		Usuario usuario = servicoDeUsuario.obtenhaUsuarioPeloId(objetoJson.get("id").getAsLong());
-		
+
 		return ResponseEntity.ok().body(conversor.toJson(usuario));
 	}
 }

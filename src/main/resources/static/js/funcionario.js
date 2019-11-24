@@ -5,7 +5,6 @@
 	var tabela = $("#tabela tbody");
 	
 	var adicioneItemNaTabela = function(objeto){
-		debugger;
 		var colunaId = "<th scope='row'>" + objeto.Id + "</th>";
 		
 		var colunaNome = "<td>" + objeto.Nome + "</td>";
@@ -68,6 +67,7 @@
 	var limpeCampos = function(){
 		$("#funcionarios option:first").attr("selected","selected");
 		$("#cargo").val("");
+		$("#porcentagem").val("");
 	}
 	
 	var valideCampos = function(){

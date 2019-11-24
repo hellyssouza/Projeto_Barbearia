@@ -36,4 +36,9 @@ public class InicioController {
 	public ModelAndView servico() {
 		return new ModelAndView("servico");
 	}
+	
+	@RequestMapping(value = "/relatorioatendimento", method = RequestMethod.GET)
+	public ModelAndView relatorioatendimento() {
+		return new ModelAndView("relatorioatendimento");
+	}
 }

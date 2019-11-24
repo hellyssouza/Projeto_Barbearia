@@ -1,0 +1,47 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<title>Insert title here</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+	<div th:replace="template :: header"></div>
+	<div class="card">
+		<div class="card-header text-center">
+			<p class="text-info" style="display: inline;">RELATÓRIO DE
+				ATENDIMENTOS</p>
+		</div>
+		<div class="card-body">
+			<div class="col-lg-5">
+				<label class="font-weight-bold" for="data">DATA</label> 
+				<input id="data" class="form-control" type="date" title="DATA">
+				<br> 
+				<label class="font-weight-bold" for="funcionarios">FUNCIONARIO</label>
+				<select class="form-control" id="funcionarios" title="FUNCIONARIO">
+				</select> 
+				<br>
+				<label class="font-weight-bold" for="status">STATUS</label>
+				<select id="status" class="form-control forma-de-pagamento">
+					<option value="1">LIVRE</option>
+					<option value="2">AGENDADO</option>
+					<option value="3">ATENDIDO</option>
+				</select>
+				<br>
+				<div class='agrupador-pagamento'>
+					<label id="labelpagamento" class="font-weight-bold" for="pagamento">PAGAMENTO</label>
+					<select id="pagamento" class="form-control forma-de-pagamento">
+						<option value="1">DINHEIRO</option>
+						<option value="2">CARTAO</option>
+					</select>
+					<br>
+				</div>
+				<button id="salvar" type="button" class="btn btn-info">GERAR</button>
+			</div>
+		</div>
+	</div>
+	<script th:src="@{/js/relatorioatendimento.js}"></script>
+</body>
+</html>

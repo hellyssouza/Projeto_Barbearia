@@ -1,6 +1,7 @@
 var MODULO = (function(modulo, $){
 	modulo.atendimento = {};
-	
+
+	modulo.atendimento.containeratendido = "<td style='width:400px'><div>{Status} {Pagamento} {Valor}</div></td>";
 	modulo.atendimento.colunaatendido = "<td><span class='badge badge-success'>{Descricao}</span></td>";
 	modulo.atendimento.colunalivre = "<td><span class='badge badge-info'>Livre</span></td>";
 	modulo.atendimento.modalatendimento = $("#modal-info-agendamento");
@@ -90,7 +91,7 @@ var MODULO = (function(modulo, $){
 				$(selectorLinha).append(modulo.atendimento.colunalivre);
 				break;
 			case modulo.atendimento.status.ATENDIDO:
-				var coluna = "<td><div><div>{Status}</div><div>{Pagamento}</div><div>{Valor}</div></div></td>";
+				var coluna = modulo.atendimento.containeratendido;
 				var porcentagem = modulo.atendimento.funcionarios.filter(x => x.Id == objeto.Funcionario)[0].Porcentagem / 100;
 				coluna = coluna.replace("{Status}", modulo.atendimento.colunaatendido.replace("{Descricao}", "Atendido").replace("<td>", "").replace("</td>", ""))
 				var pagamento = objeto.Pagamento == modulo.atendimento.pagamento.DINHEIRO ? "DINHEIRO" : "CARTAO";
@@ -150,6 +151,7 @@ var MODULO = (function(modulo, $){
 		$("#horario-fim").val("");
 		$("#periodo").val("");
 		$("#funcionarios option:first").attr("selected","selected");
+		$(".forma-de-pagamento option:first").attr("selected","selected");
 	}
 	
 	modulo.atendimento.valideCampos = function(){
@@ -188,10 +190,9 @@ var MODULO = (function(modulo, $){
 				processData: false,
 				data: JSON.stringify(objeto),
 				success: function(){
+					var coluna = modulo.atendimento.containeratendido;
 					modulo.atendimento.atendimentocontexto.Pagamento = $(".forma-de-pagamento").children("option:selected").val();
-					debugger;
 					var porcentagem = modulo.atendimento.funcionarios.filter(x => x.Id == modulo.atendimento.atendimentocontexto.Funcionario)[0].Porcentagem / 100;
-					var coluna = "<div><div>{Status}</div><div>{Pagamento}</div><div>{Valor}</div></div>";
 					coluna = coluna.replace("{Status}", modulo.atendimento.colunaatendido.replace("{Descricao}", "Atendido").replace("<td>", "").replace("</td>", ""))
 					var pagamento = modulo.atendimento.atendimentocontexto.Pagamento == modulo.atendimento.pagamento.DINHEIRO ? "DINHEIRO" : "CARTAO";
 					coluna = coluna.replace("{Pagamento}", modulo.atendimento.colunaatendido.replace("{Descricao}", "Pagamento: " + pagamento).replace("<td>", "").replace("</td>", ""));

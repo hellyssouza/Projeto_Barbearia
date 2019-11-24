@@ -136,7 +136,7 @@ public class RepositorioDeAtendimentoImpl implements AtendimentorRepositorio {
 
 		return servicos;
 	}
-
+	
 	public List<Atendimento> consultePorFuncionario(Long idFuncionario) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
 
