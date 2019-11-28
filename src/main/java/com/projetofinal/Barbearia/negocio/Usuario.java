@@ -36,6 +36,17 @@ public class Usuario implements Serializable {
 
 	@Column(name = "FUNCIONARIO")
 	private Long funcionario;
+	
+	@Column(name = "NUMERO")
+	private String numero;
+	
+	public String getNumero() {
+		return numero;
+	}
+
+	public void setNumero(String numero) {
+		this.numero = numero;
+	}
 
 	public Long getFuncionario() {
 		return funcionario;

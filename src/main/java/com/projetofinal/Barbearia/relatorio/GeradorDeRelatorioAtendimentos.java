@@ -16,7 +16,7 @@ import net.sf.jasperreports.engine.JasperReport;
 public class GeradorDeRelatorioAtendimentos implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	public JasperPrint gereRelatorio(String data, Integer idFuncionario, Integer status, Integer pagamento)
+	public JasperPrint gereRelatorio(String dataDeInicio, String dataDeFim, Integer idFuncionario, Integer status, Integer pagamento)
 			throws JRException {
 		final InputStream jasperTemplate = GeradorDeRelatorioAtendimentos.class
 				.getResourceAsStream("relatorioatendimento.jrxml");
@@ -25,8 +25,10 @@ public class GeradorDeRelatorioAtendimentos implements Serializable {
 
 		Map<String, Object> parametros = new HashMap<String, Object>();
 
-		parametros.put("PR_DATA", data);
-
+		parametros.put("PR_DATA_INICIO", dataDeInicio);
+		
+		parametros.put("PR_DATA_FIM", dataDeFim);
+		
 		parametros.put("PR_FUNCIONARIO", idFuncionario);
 
 		parametros.put("PR_STATUS", status);

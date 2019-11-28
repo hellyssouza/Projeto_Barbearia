@@ -1,4 +1,11 @@
 (function($) {
+	var limpeCampos = function(){
+		$("[name='nome']").val("");
+		$("[name='login']").val("");
+		$("[name='senha']").val("");
+		 $("[name='telefone']").val("");
+	}
+	
 	var apresenteMensagem = function(objeto){
 		var mensagemSucesso = "";
 		var linkParaVoltarLogin = "";
@@ -19,6 +26,8 @@
 		
 		$("#salvar").after(container);
 		
+		limpeCampos();
+		
 		if ($("#mensagem").is(":visible")) {
 			setTimeout(function() {
 				$("#mensagem").hide();
@@ -31,8 +40,11 @@
 		var nome = $("[name='nome']").val();
 		var login = $("[name='login']").val();
 		var senha = $("[name='senha']").val();
+		var telefone = $("[name='telefone']").val();
+		
+		if (nome === "" || login === "" || senha === "" || telefone == "") {
+			$.notify("Existem campos que não foram preenchidos!", { className: 'error', position: "top lefth" });
 
-		if (nome === "" || login === "" || senha === "") {
 			return;
 		}
 		
@@ -41,6 +53,7 @@
 			nome : nome,
 			login : login,
 			senha : senha,
+			numero: telefone,
 			ativo : 1
 		};
 		

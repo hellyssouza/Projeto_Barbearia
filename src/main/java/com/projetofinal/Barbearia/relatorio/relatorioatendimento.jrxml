@@ -43,12 +43,13 @@
 	<subDataset name="tableDataset" uuid="d2b3fcbb-f765-4d96-beba-fd7c688d2130">
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<parameter name="DATA" class="java.lang.String">
+		<parameter name="DATA_INICIO" class="java.lang.String">
 			<parameterDescription><![CDATA[]]></parameterDescription>
 		</parameter>
 		<parameter name="FUNCIONARIO" class="java.lang.Integer"/>
 		<parameter name="STATUS" class="java.lang.Integer"/>
 		<parameter name="PAGAMENTO" class="java.lang.Integer"/>
+		<parameter name="DATA_FIM" class="java.lang.String"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT CONVERT(VARCHAR(10), CAST(LEFT(ATEN.DATAHORARIO, 10) AS DATE), 103) AS DATA,
        LEFT(RIGHT(ATEN.DATAHORARIO, 12), 5) HORARIO,
@@ -67,7 +68,7 @@
        ISNULL((ATEN.VALOR * (FUN.PORCENTAGEM / 100.0)), '') AS PORCENTAGEM
 FROM ATENDIMENTO AS ATEN
 INNER JOIN FUNCIONARIO AS FUN ON ATEN.FUNCIONARIO = FUN.ID
-WHERE LEFT(ATEN.DATAHORARIO, 10) LIKE $P{DATA}
+WHERE LEFT(ATEN.DATAHORARIO, 10) BETWEEN $P{DATA_INICIO} AND  $P{DATA_FIM} 
 AND ATEN.FUNCIONARIO = $P{FUNCIONARIO}
 AND ATEN.STATUS = $P{STATUS}
 AND ISNULL(ATEN.PAGAMENTO, 0) = $P{PAGAMENTO}]]>
@@ -115,10 +116,11 @@ AND ISNULL(ATEN.PAGAMENTO, 0) = $P{PAGAMENTO}]]>
 			<groupExpression><![CDATA[$F{PORCENTAGEM}]]></groupExpression>
 		</group>
 	</subDataset>
-	<parameter name="PR_DATA" class="java.lang.String"/>
+	<parameter name="PR_DATA_INICIO" class="java.lang.String"/>
 	<parameter name="PR_FUNCIONARIO" class="java.lang.Integer"/>
 	<parameter name="PR_STATUS" class="java.lang.Integer"/>
 	<parameter name="PR_PAGAMENTO" class="java.lang.Integer"/>
+	<parameter name="PR_DATA_FIM" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT CONVERT(VARCHAR(10), CAST(LEFT(ATEN.DATAHORARIO, 10) AS DATE), 103) AS DATA,
        LEFT(RIGHT(ATEN.DATAHORARIO, 12), 5) HORARIO,
@@ -159,6 +161,14 @@ INNER JOIN FUNCIONARIO AS FUN ON ATEN.FUNCIONARIO = FUN.ID]]>
 	<field name="PORCENTAGEM" class="java.lang.Double">
 		<property name="com.jaspersoft.studio.field.label" value="PORCENTAGEM"/>
 	</field>
+	<variable name="TOTAL_VALOR" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{VALOR}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="TOTAL_PORCENTAGEM" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{PORCENTAGEM}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
 	<title>
 		<band height="72">
 			<frame>
@@ -176,8 +186,11 @@ INNER JOIN FUNCIONARIO AS FUN ON ATEN.FUNCIONARIO = FUN.ID]]>
 	<pageHeader>
 		<band height="13"/>
 	</pageHeader>
+	<columnFooter>
+		<band height="58"/>
+	</columnFooter>
 	<pageFooter>
-		<band height="17">
+		<band height="30">
 			<textField>
 				<reportElement mode="Opaque" x="0" y="4" width="515" height="13" backcolor="#E6E6E6" uuid="fed27553-a6c4-4a8a-9056-2f6f2589a3e5"/>
 				<textElement textAlignment="Right"/>
@@ -194,18 +207,18 @@ INNER JOIN FUNCIONARIO AS FUN ON ATEN.FUNCIONARIO = FUN.ID]]>
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="325" splitType="Stretch">
+		<band height="140" splitType="Stretch">
 			<property name="local_mesure_unitheight" value="pixel"/>
 			<componentElement>
-				<reportElement x="0" y="0" width="560" height="325" uuid="747a5a65-8fbe-43aa-b660-bebe8279dfb4">
+				<reportElement x="0" y="0" width="560" height="60" uuid="747a5a65-8fbe-43aa-b660-bebe8279dfb4">
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="tableDataset" uuid="b8e8a7e3-4210-4890-aadf-f07f70ef1d82">
-						<datasetParameter name="DATA">
-							<datasetParameterExpression><![CDATA[$P{PR_DATA}]]></datasetParameterExpression>
+					<datasetRun subDataset="tableDataset" uuid="3ddf786a-91ce-44b6-a1a7-994d5ecd121b">
+						<datasetParameter name="DATA_INICIO">
+							<datasetParameterExpression><![CDATA[$P{PR_DATA_INICIO}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="FUNCIONARIO">
 							<datasetParameterExpression><![CDATA[$P{PR_FUNCIONARIO}]]></datasetParameterExpression>
@@ -216,9 +229,12 @@ INNER JOIN FUNCIONARIO AS FUN ON ATEN.FUNCIONARIO = FUN.ID]]>
 						<datasetParameter name="PAGAMENTO">
 							<datasetParameterExpression><![CDATA[$P{PR_PAGAMENTO}]]></datasetParameterExpression>
 						</datasetParameter>
+						<datasetParameter name="DATA_FIM">
+							<datasetParameterExpression><![CDATA[$P{PR_DATA_FIM}]]></datasetParameterExpression>
+						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:columnGroup width="560" uuid="ad11994f-6b26-4f66-9ed1-6f89bb0356df">
+					<jr:columnGroup width="550" uuid="ad11994f-6b26-4f66-9ed1-6f89bb0356df">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Columns [7]"/>
 						<jr:column width="79" uuid="82bb03ea-c0b6-48d0-accf-b6d144a86907">
 							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
@@ -264,11 +280,11 @@ INNER JOIN FUNCIONARIO AS FUN ON ATEN.FUNCIONARIO = FUN.ID]]>
 								</textField>
 							</jr:detailCell>
 						</jr:column>
-						<jr:column width="112" uuid="ec98605a-d577-429a-b0e4-461bd236a610">
+						<jr:column width="102" uuid="ec98605a-d577-429a-b0e4-461bd236a610">
 							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 							<jr:tableHeader style="Table_TH" height="30" rowSpan="1">
 								<staticText>
-									<reportElement mode="Transparent" x="0" y="0" width="112" height="30" forecolor="#006699" backcolor="#E6E6E6" uuid="7af21d84-4358-4bda-9160-f2903fd60ec5"/>
+									<reportElement mode="Transparent" x="0" y="0" width="102" height="30" forecolor="#006699" backcolor="#E6E6E6" uuid="7af21d84-4358-4bda-9160-f2903fd60ec5"/>
 									<textElement textAlignment="Center">
 										<font size="14" isBold="true"/>
 									</textElement>
@@ -277,7 +293,7 @@ INNER JOIN FUNCIONARIO AS FUN ON ATEN.FUNCIONARIO = FUN.ID]]>
 							</jr:tableHeader>
 							<jr:detailCell style="Table_TD" height="30">
 								<textField>
-									<reportElement key="" x="0" y="0" width="112" height="30" uuid="02b0c80e-25ec-4bd6-8297-07903d80e304"/>
+									<reportElement key="" x="0" y="0" width="102" height="30" uuid="02b0c80e-25ec-4bd6-8297-07903d80e304"/>
 									<box leftPadding="2"/>
 									<textElement textAlignment="Center">
 										<font fontName="Arial" size="14"/>

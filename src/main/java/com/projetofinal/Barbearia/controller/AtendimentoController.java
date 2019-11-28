@@ -75,12 +75,13 @@ public class AtendimentoController {
 		byte[] dados = null;
 		
 		try {
-			String data = jsonObjeto.get("data").getAsString();
+			String dataDeInicio = jsonObjeto.get("dataDeInicio").getAsString();
+			String dataDeFim = jsonObjeto.get("dataDeFim").getAsString();
 			Integer funcionario = jsonObjeto.get("funcionario").getAsInt();
 			Integer status = jsonObjeto.get("status").getAsInt();
 			Integer pagamento = jsonObjeto.get("pagamento").getAsInt();
 			
-			JasperPrint print = gerador.gereRelatorio(data, funcionario, status, pagamento);
+			JasperPrint print = gerador.gereRelatorio(dataDeInicio, dataDeFim, funcionario, status, pagamento);
 			
 			dados = JasperExportManager.exportReportToPdf(print);
 

@@ -15,7 +15,8 @@ var MODULO = (function(modulo, $){
 	
 	modulo.relatorioatendimento.camposNaoEstaoPreenchidos = function()
 	{
-		if(document.getElementById("data").value === "" ||
+		if(document.getElementById("dataDeInicio").value === "" ||
+		  document.getElementById("dataDeFim").value === "" ||
 		  $(modulo.relatorioatendimento.comboFuncionarios).children("option:selected").val() === "" || 
 		  $(modulo.relatorioatendimento.comboStatus).children("option:selected").val() === "" ||
 		  ($(".agrupador-pagamento").is(":visible") && $(modulo.relatorioatendimento.comboPagamento).children("option:selected").val() === ""))
@@ -72,7 +73,8 @@ var MODULO = (function(modulo, $){
 		    };
 		    
 		    var filtros = {
-		    		data : document.getElementById("data").value,
+		    		dataDeInicio : document.getElementById("dataDeInicio").value,
+		    		dataDeFim: document.getElementById("dataDeFim").value,
 		    		funcionario: $(modulo.relatorioatendimento.comboFuncionarios).children("option:selected").val(),
 		    		status: $(modulo.relatorioatendimento.comboStatus).children("option:selected").val(),
 		    		pagamento: $(".agrupador-pagamento").is(":visible") ? $(modulo.relatorioatendimento.comboPagamento).children("option:selected").val() : 0

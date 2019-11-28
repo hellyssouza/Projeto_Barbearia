@@ -70,6 +70,7 @@ var MODULO = (function(modulo, $){
 			$(".lista-de-servicos").empty();
 			
 			$(".nome-cliente").html("Cliente: " + usuario.nome);
+			$(".telefone-cliente").html("Telefone: " + (usuario.numero == null ? "" : usuario.numero));
 			
 			servicos.forEach(servico => {
 				$(".lista-de-servicos").append("<li class='list-group-item d-flex justify-content-between align-items-center'>" 
