@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.10.0.final using JasperReports Library version 6.10.0-unknown  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorioatendimento" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d4a1d5eb-82dd-412f-a620-202e4bdf9dba">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorioatendimento" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d4a1d5eb-82dd-412f-a620-202e4bdf9dba">
 	<property name="template.engine" value="tabular_template"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
@@ -51,23 +51,43 @@
 		<parameter name="PAGAMENTO" class="java.lang.Integer"/>
 		<parameter name="DATA_FIM" class="java.lang.String"/>
 		<queryString language="SQL">
-			<![CDATA[SELECT CONVERT(VARCHAR(10), CAST(LEFT(ATEN.DATAHORARIO, 10) AS DATE), 103) AS DATA,
-       LEFT(RIGHT(ATEN.DATAHORARIO, 12), 5) HORARIO,
-       FUN.NOME AS FUNCIONARIO,
-       (CASE
-            WHEN ATEN.STATUS = 1 THEN 'LIVRE'
-            WHEN ATEN.STATUS = 2 THEN 'AGENDADO'
-            WHEN ATEN.STATUS = 3 THEN 'ATENDIDO'
-        END) AS STATUS,
-       (CASE
-            WHEN ATEN.PAGAMENTO = 1 THEN 'DINHEIRO'
-            WHEN ATEN.PAGAMENTO = 2 THEN 'CARTAO'
-            WHEN ATEN.PAGAMENTO IS NULL THEN 'N/A'
-        END) AS PAGAMENTO,
-       ISNULL(ATEN.VALOR, '') AS VALOR,
-       ISNULL((ATEN.VALOR * (FUN.PORCENTAGEM / 100.0)), '') AS PORCENTAGEM
-FROM ATENDIMENTO AS ATEN
-INNER JOIN FUNCIONARIO AS FUN ON ATEN.FUNCIONARIO = FUN.ID
+			<![CDATA[SELECT CONVERT(VARCHAR(10), CAST(LEFT(ATEN.DATAHORARIO, 10) AS DATE), 103) AS 
+       DATA, 
+       LEFT(RIGHT(ATEN.DATAHORARIO, 12), 5) 
+       HORARIO, 
+       FUN.NOME                                                            AS 
+       FUNCIONARIO, 
+       ( CASE 
+           WHEN ATEN.STATUS = 1 THEN 'LIVRE' 
+           WHEN ATEN.STATUS = 2 THEN 'AGENDADO' 
+           WHEN ATEN.STATUS = 3 THEN 'ATENDIDO' 
+         END )                                                             AS 
+       STATUS, 
+       ( CASE 
+           WHEN ATEN.PAGAMENTO = 1 THEN 'DINHEIRO' 
+           WHEN ATEN.PAGAMENTO = 2 THEN 'CARTAO' 
+           WHEN ATEN.PAGAMENTO IS NULL THEN 'N/A' 
+         END )                                                             AS 
+       PAGAMENTO, 
+       ISNULL(ATEN.VALOR, '')                                              AS 
+       VALOR, 
+       ISNULL(( ATEN.VALOR * ( FUN.PORCENTAGEM / 100.0 ) ), '')            AS 
+       PORCENTAGEM, 
+       ISNULL((SELECT SUM(VALOR) 
+        FROM   ATENDIMENTO ATEN1 
+        WHERE  ATEN1.FUNCIONARIO = ATEN.FUNCIONARIO 
+               AND ATEN1.STATUS = ATEN.STATUS),'' )
+       TOTAL_VALOR, 
+       ISNULL((SELECT SUM(VALOR * ( FUN1.PORCENTAGEM / 100.0 )) 
+        FROM   ATENDIMENTO ATEN1 
+               INNER JOIN FUNCIONARIO FUN1 
+                       ON ATEN1.FUNCIONARIO = FUN1.ID 
+        WHERE  ATEN1.FUNCIONARIO = ATEN.FUNCIONARIO 
+               AND ATEN1.STATUS = ATEN.STATUS), '')
+       TOTAL_PORCENTAGEM 
+FROM   ATENDIMENTO AS ATEN 
+       INNER JOIN FUNCIONARIO AS FUN 
+               ON ATEN.FUNCIONARIO = FUN.ID 
 WHERE LEFT(ATEN.DATAHORARIO, 10) BETWEEN $P{DATA_INICIO} AND  $P{DATA_FIM} 
 AND ATEN.FUNCIONARIO = $P{FUNCIONARIO}
 AND ATEN.STATUS = $P{STATUS}
@@ -93,6 +113,12 @@ AND ISNULL(ATEN.PAGAMENTO, 0) = $P{PAGAMENTO}]]>
 		</field>
 		<field name="PORCENTAGEM" class="java.lang.Double">
 			<property name="com.jaspersoft.studio.field.label" value="PORCENTAGEM"/>
+		</field>
+		<field name="TOTAL_VALOR" class="java.lang.Double">
+			<property name="com.jaspersoft.studio.field.label" value="TOTAL_VALOR"/>
+		</field>
+		<field name="TOTAL_PORCENTAGEM" class="java.lang.Double">
+			<property name="com.jaspersoft.studio.field.label" value="TOTAL_PORCENTAGEM"/>
 		</field>
 		<group name="DATA">
 			<groupExpression><![CDATA[$F{DATA}]]></groupExpression>
@@ -122,23 +148,47 @@ AND ISNULL(ATEN.PAGAMENTO, 0) = $P{PAGAMENTO}]]>
 	<parameter name="PR_PAGAMENTO" class="java.lang.Integer"/>
 	<parameter name="PR_DATA_FIM" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT CONVERT(VARCHAR(10), CAST(LEFT(ATEN.DATAHORARIO, 10) AS DATE), 103) AS DATA,
-       LEFT(RIGHT(ATEN.DATAHORARIO, 12), 5) HORARIO,
-       FUN.NOME AS FUNCIONARIO,
-       (CASE
-            WHEN ATEN.STATUS = 1 THEN 'LIVRE'
-            WHEN ATEN.STATUS = 2 THEN 'AGENDADO'
-            WHEN ATEN.STATUS = 3 THEN 'ATENDIDO'
-        END) AS STATUS,
-       (CASE
-            WHEN ATEN.PAGAMENTO = 1 THEN 'DINHEIRO'
-            WHEN ATEN.PAGAMENTO = 2 THEN 'CARTAO'
-            WHEN ATEN.PAGAMENTO IS NULL THEN ''
-        END) AS PAGAMENTO,
-       ATEN.VALOR,
-       (ATEN.VALOR * (FUN.PORCENTAGEM / 100.0)) PORCENTAGEM
-FROM ATENDIMENTO AS ATEN
-INNER JOIN FUNCIONARIO AS FUN ON ATEN.FUNCIONARIO = FUN.ID]]>
+		<![CDATA[SELECT CONVERT(VARCHAR(10), CAST(LEFT(ATEN.DATAHORARIO, 10) AS DATE), 103) AS 
+       DATA, 
+       LEFT(RIGHT(ATEN.DATAHORARIO, 12), 5) 
+       HORARIO, 
+       FUN.NOME                                                            AS 
+       FUNCIONARIO, 
+       ( CASE 
+           WHEN ATEN.STATUS = 1 THEN 'LIVRE' 
+           WHEN ATEN.STATUS = 2 THEN 'AGENDADO' 
+           WHEN ATEN.STATUS = 3 THEN 'ATENDIDO' 
+         END )                                                             AS 
+       STATUS, 
+       ( CASE 
+           WHEN ATEN.PAGAMENTO = 1 THEN 'DINHEIRO' 
+           WHEN ATEN.PAGAMENTO = 2 THEN 'CARTAO' 
+           WHEN ATEN.PAGAMENTO IS NULL THEN 'N/A' 
+         END )                                                             AS 
+       PAGAMENTO, 
+       ISNULL(ATEN.VALOR, '')                                              AS 
+       VALOR, 
+       ISNULL(( ATEN.VALOR * ( FUN.PORCENTAGEM / 100.0 ) ), '')            AS 
+       PORCENTAGEM, 
+       ISNULL((SELECT SUM(VALOR) 
+        FROM   ATENDIMENTO ATEN1 
+        WHERE  ATEN1.FUNCIONARIO = ATEN.FUNCIONARIO 
+               AND ATEN1.STATUS = ATEN.STATUS),'' )
+       TOTAL_VALOR, 
+       ISNULL((SELECT SUM(VALOR * ( FUN1.PORCENTAGEM / 100.0 )) 
+        FROM   ATENDIMENTO ATEN1 
+               INNER JOIN FUNCIONARIO FUN1 
+                       ON ATEN1.FUNCIONARIO = FUN1.ID 
+        WHERE  ATEN1.FUNCIONARIO = ATEN.FUNCIONARIO 
+               AND ATEN1.STATUS = ATEN.STATUS), '')
+       TOTAL_PORCENTAGEM 
+FROM   ATENDIMENTO AS ATEN 
+       INNER JOIN FUNCIONARIO AS FUN 
+               ON ATEN.FUNCIONARIO = FUN.ID 
+WHERE LEFT(ATEN.DATAHORARIO, 10) BETWEEN $P{PR_DATA_INICIO} AND  $P{PR_DATA_FIM} 
+AND ATEN.FUNCIONARIO = $P{PR_FUNCIONARIO}
+AND ATEN.STATUS = $P{PR_STATUS}
+AND ISNULL(ATEN.PAGAMENTO, 0) = $P{PR_PAGAMENTO}]]>
 	</queryString>
 	<field name="DATA" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="DATA"/>
@@ -161,14 +211,12 @@ INNER JOIN FUNCIONARIO AS FUN ON ATEN.FUNCIONARIO = FUN.ID]]>
 	<field name="PORCENTAGEM" class="java.lang.Double">
 		<property name="com.jaspersoft.studio.field.label" value="PORCENTAGEM"/>
 	</field>
-	<variable name="TOTAL_VALOR" class="java.lang.Double" calculation="Sum">
-		<variableExpression><![CDATA[$F{VALOR}]]></variableExpression>
-		<initialValueExpression><![CDATA[0]]></initialValueExpression>
-	</variable>
-	<variable name="TOTAL_PORCENTAGEM" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{PORCENTAGEM}]]></variableExpression>
-		<initialValueExpression><![CDATA[0]]></initialValueExpression>
-	</variable>
+	<field name="TOTAL_VALOR" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="TOTAL_VALOR"/>
+	</field>
+	<field name="TOTAL_PORCENTAGEM" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="TOTAL_PORCENTAGEM"/>
+	</field>
 	<title>
 		<band height="72">
 			<frame>
@@ -187,7 +235,36 @@ INNER JOIN FUNCIONARIO AS FUN ON ATEN.FUNCIONARIO = FUN.ID]]>
 		<band height="13"/>
 	</pageHeader>
 	<columnFooter>
-		<band height="58"/>
+		<band height="59">
+			<textField>
+				<reportElement x="227" y="20" width="60" height="20" uuid="e66cf20b-9ef9-4bf4-bbd2-d2808549152a"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TOTAL_VALOR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="430" y="19" width="54" height="20" uuid="4e5e3eff-d722-4d77-8868-94e804618601"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TOTAL_PORCENTAGEM}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="140" y="20" width="80" height="20" uuid="3045539c-718e-4c8d-ac5b-0fc34f2b0e73"/>
+				<textElement>
+					<font size="14" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Total Valor:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="290" y="19" width="139" height="21" uuid="90c2d13f-b37e-46e4-978d-0aee641ec00c"/>
+				<textElement>
+					<font size="14" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Total Porcentagem:]]></text>
+			</staticText>
+		</band>
 	</columnFooter>
 	<pageFooter>
 		<band height="30">
@@ -210,7 +287,7 @@ INNER JOIN FUNCIONARIO AS FUN ON ATEN.FUNCIONARIO = FUN.ID]]>
 		<band height="140" splitType="Stretch">
 			<property name="local_mesure_unitheight" value="pixel"/>
 			<componentElement>
-				<reportElement x="0" y="0" width="560" height="60" uuid="747a5a65-8fbe-43aa-b660-bebe8279dfb4">
+				<reportElement x="0" y="-10" width="560" height="60" uuid="747a5a65-8fbe-43aa-b660-bebe8279dfb4">
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>

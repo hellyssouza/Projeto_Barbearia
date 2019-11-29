@@ -43,8 +43,6 @@ public class AgendamentoController {
 		
 		Usuario usuario = servicoDeUsuario.obtenhaUsuarioLogado();
 		
-		usuario.setId(servicoDeUsuario.consulteIdDoUsuario());
-		
 		return ResponseEntity.ok().body(conversor.toJson(usuario));
 	}
 	

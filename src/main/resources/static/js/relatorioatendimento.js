@@ -5,6 +5,7 @@ var MODULO = (function(modulo, $){
 	modulo.relatorioatendimento.comboPagamento = $("#pagamento");
 	modulo.relatorioatendimento.comboStatus = $("#status");
 	modulo.relatorioatendimento.botaoSalvar = $("#salvar");
+	modulo.relatorioatendimento.usuarioDoContexto = {};
 	
 	modulo.relatorioatendimento.adicioneNaComboBox = function(objeto)
 	{
@@ -30,11 +31,22 @@ var MODULO = (function(modulo, $){
 	$(document).ready(function(){
 		$(".agrupador-pagamento").hide();
 		
-		$.get("consultefuncionarios", function(dados, status){
-			modulo.relatorioatendimento.funcionarios = Object.values(JSON.parse(dados));
+		$.get("consulteusuariocontexto", function(usuario, status){
+			modulo.relatorioatendimento.usuarioDoContexto = JSON.parse(usuario);
 			
-			modulo.relatorioatendimento.funcionarios.forEach(funcionario => {
-				modulo.relatorioatendimento.adicioneNaComboBox(funcionario);
+			$.get("consultefuncionarios", function(dados, status){
+				if(modulo.relatorioatendimento.usuarioDoContexto.funcionario)
+				{
+					modulo.relatorioatendimento.funcionarios = Object.values(JSON.parse(dados)).filter(x => x.Id == modulo.relatorioatendimento.usuarioDoContexto.funcionario);
+				}
+				else
+				{
+					modulo.relatorioatendimento.funcionarios = Object.values(JSON.parse(dados));
+				}
+				
+				modulo.relatorioatendimento.funcionarios.forEach(funcionario => {
+					modulo.relatorioatendimento.adicioneNaComboBox(funcionario);
+				});
 			});
 		});
 		

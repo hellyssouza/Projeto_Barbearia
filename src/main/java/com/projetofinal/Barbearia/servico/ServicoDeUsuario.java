@@ -31,11 +31,9 @@ public class ServicoDeUsuario {
 	public Usuario obtenhaUsuarioLogado() {
 		Authentication usuarioDoContexto = SecurityContextHolder.getContext().getAuthentication();
 		
-		Usuario usuario = new Usuario();
+		Long idUsuario = repositorio.consulteIdDoUsuario(usuarioDoContexto.getName());
 		
-		usuario.setNome(usuarioDoContexto.getName());
-		
-		return usuario;
+		return obtenhaUsuarioPeloId(idUsuario);
 	}
 	
 	public boolean existe(Long id) {

@@ -75,7 +75,7 @@ var MODULO = (function(modulo, $){
 			servicos.forEach(servico => {
 				$(".lista-de-servicos").append("<li class='list-group-item d-flex justify-content-between align-items-center'>" 
 										+ servico.nome + "<span class='badge badge-primary badge-pill'> " 
-										+ accounting.formatMoney(objeto.Valor) + "</span>" +"</li>");
+										+ accounting.formatMoney(servico.valor) + "</span>" +"</li>");
 			});
 			
 			modulo.atendimento.seletorcolunacontexto = ".coluna_" + classe;
@@ -119,6 +119,7 @@ var MODULO = (function(modulo, $){
 							processData: false,
 							data: JSON.stringify({id: objeto.Usuario }),
 							success: function(usuario){
+								debugger;
 								modulo.atendimento.crieColunaEAdicioneNaTabela(selectorLinha, objeto, usuario, servicos);
 							},
 							error: function(erro){
