@@ -15,14 +15,16 @@
 		{
 			mensagemSucesso = "<div id='mensagem' class='alert alert-info'>Usuário cadastrado com sucesso!</div>";
 			linkParaVoltarLogin = "<a href='/login' class='badge badge-info'>Voltar</a>";
-			container = "<div class='text-center'>" + "<br>" + mensagemSucesso + linkParaVoltarLogin + "</div>";
+			container = "<div class='text-center agrupador'>" + "<br>" + mensagemSucesso + linkParaVoltarLogin + "</div>";
 		}
 		else
 		{
 			mensagemSucesso = "<div id='mensagem' class='alert alert-danger'>Usuário não cadastrado!</div>";
 			linkParaVoltarLogin = "<a href='/login' class='badge badge-info'>Voltar</a>";
-			container = "<div class='text-center'>" + "<br>" + mensagemSucesso + linkParaVoltarLogin + "</div>";
+			container = "<div class='text-center agrupador'>" + "<br>" + mensagemSucesso + linkParaVoltarLogin + "</div>";
 		}
+		
+		$(".agrupador").remove();
 		
 		$("#salvar").after(container);
 		
