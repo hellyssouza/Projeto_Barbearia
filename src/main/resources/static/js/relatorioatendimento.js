@@ -29,8 +29,6 @@ var MODULO = (function(modulo, $){
 	}
 	
 	$(document).ready(function(){
-		$(".agrupador-pagamento").hide();
-		
 		$.get("consulteusuariocontexto", function(usuario, status){
 			modulo.relatorioatendimento.usuarioDoContexto = JSON.parse(usuario);
 			
@@ -48,17 +46,6 @@ var MODULO = (function(modulo, $){
 					modulo.relatorioatendimento.adicioneNaComboBox(funcionario);
 				});
 			});
-		});
-		
-		$(modulo.relatorioatendimento.comboStatus).on("change", function(){
-			if($(this).val() === '3')
-			{
-				$(".agrupador-pagamento").show();
-			}
-			else
-			{
-				$(".agrupador-pagamento").hide();
-			}
 		});
 		
 		$(modulo.relatorioatendimento.botaoSalvar).on("click", function() {
@@ -89,7 +76,7 @@ var MODULO = (function(modulo, $){
 		    		dataDeFim: document.getElementById("dataDeFim").value,
 		    		funcionario: $(modulo.relatorioatendimento.comboFuncionarios).children("option:selected").val(),
 		    		status: $(modulo.relatorioatendimento.comboStatus).children("option:selected").val(),
-		    		pagamento: $(".agrupador-pagamento").is(":visible") ? $(modulo.relatorioatendimento.comboPagamento).children("option:selected").val() : 0
+		    		pagamento: $(modulo.relatorioatendimento.comboPagamento).children("option:selected").val()
 		    };
 		    
 		    xhr.send(JSON.stringify(filtros));

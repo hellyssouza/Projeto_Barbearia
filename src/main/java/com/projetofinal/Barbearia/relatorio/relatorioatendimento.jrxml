@@ -51,47 +51,30 @@
 		<parameter name="PAGAMENTO" class="java.lang.Integer"/>
 		<parameter name="DATA_FIM" class="java.lang.String"/>
 		<queryString language="SQL">
-			<![CDATA[SELECT CONVERT(VARCHAR(10), CAST(LEFT(ATEN.DATAHORARIO, 10) AS DATE), 103) AS 
-       DATA, 
-       LEFT(RIGHT(ATEN.DATAHORARIO, 12), 5) 
-       HORARIO, 
-       FUN.NOME                                                            AS 
-       FUNCIONARIO, 
-       ( CASE 
-           WHEN ATEN.STATUS = 1 THEN 'LIVRE' 
-           WHEN ATEN.STATUS = 2 THEN 'AGENDADO' 
-           WHEN ATEN.STATUS = 3 THEN 'ATENDIDO' 
-         END )                                                             AS 
-       STATUS, 
-       ( CASE 
-           WHEN ATEN.PAGAMENTO = 1 THEN 'DINHEIRO' 
-           WHEN ATEN.PAGAMENTO = 2 THEN 'CARTAO' 
-           WHEN ATEN.PAGAMENTO IS NULL THEN 'N/A' 
-         END )                                                             AS 
-       PAGAMENTO, 
-       ISNULL(ATEN.VALOR, '')                                              AS 
-       VALOR, 
-       ISNULL(( ATEN.VALOR * ( FUN.PORCENTAGEM / 100.0 ) ), '')            AS 
-       PORCENTAGEM, 
-       ISNULL((SELECT SUM(VALOR) 
-        FROM   ATENDIMENTO ATEN1 
-        WHERE  ATEN1.FUNCIONARIO = ATEN.FUNCIONARIO 
-               AND ATEN1.STATUS = ATEN.STATUS),'' )
-       TOTAL_VALOR, 
-       ISNULL((SELECT SUM(VALOR * ( FUN1.PORCENTAGEM / 100.0 )) 
-        FROM   ATENDIMENTO ATEN1 
-               INNER JOIN FUNCIONARIO FUN1 
-                       ON ATEN1.FUNCIONARIO = FUN1.ID 
-        WHERE  ATEN1.FUNCIONARIO = ATEN.FUNCIONARIO 
-               AND ATEN1.STATUS = ATEN.STATUS), '')
-       TOTAL_PORCENTAGEM 
+			<![CDATA[SELECT CONVERT(VARCHAR(10), CAST(LEFT(ATEN.DATAHORARIO, 10) AS DATE), 103) AS DATA,
+       LEFT(RIGHT(ATEN.DATAHORARIO, 12), 5) HORARIO,
+       FUN.NOME AS FUNCIONARIO,
+       (CASE
+            WHEN ATEN.STATUS = 1 THEN 'LIVRE'
+            WHEN ATEN.STATUS = 2 THEN 'AGENDADO'
+            WHEN ATEN.STATUS = 3 THEN 'ATENDIDO'
+        END) AS STATUS,
+       (CASE
+            WHEN ATEN.PAGAMENTO = 1 THEN 'DINHEIRO'
+            WHEN ATEN.PAGAMENTO = 2 THEN 'CARTAO'
+            WHEN ATEN.PAGAMENTO IS NULL THEN 'N/A'
+        END) AS PAGAMENTO,
+       ISNULL(ATEN.VALOR, '') AS VALOR,
+       ISNULL((ATEN.VALOR * (FUN.PORCENTAGEM / 100.0)), '') AS PORCENTAGEM,
+	   ISNULL(SUM(ATEN.VALOR) OVER(), 0) AS TOTAL_VALOR,
+	   ISNULL(SUM((ATEN.VALOR * (FUN.PORCENTAGEM / 100.0))) OVER(), 0) TOTAL_PORCENTAGEM 
 FROM   ATENDIMENTO AS ATEN 
        INNER JOIN FUNCIONARIO AS FUN 
                ON ATEN.FUNCIONARIO = FUN.ID 
 WHERE LEFT(ATEN.DATAHORARIO, 10) BETWEEN $P{DATA_INICIO} AND  $P{DATA_FIM} 
 AND ATEN.FUNCIONARIO = $P{FUNCIONARIO}
 AND ATEN.STATUS = $P{STATUS}
-AND ISNULL(ATEN.PAGAMENTO, 0) = $P{PAGAMENTO}]]>
+AND (ISNULL(ATEN.PAGAMENTO, 0) =  $P{PAGAMENTO}  OR ( $P{PAGAMENTO}  = 0 AND ISNULL(ATEN.PAGAMENTO, 0) IN(0,1,2)))]]>
 		</queryString>
 		<field name="DATA" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.label" value="DATA"/>
@@ -148,47 +131,30 @@ AND ISNULL(ATEN.PAGAMENTO, 0) = $P{PAGAMENTO}]]>
 	<parameter name="PR_PAGAMENTO" class="java.lang.Integer"/>
 	<parameter name="PR_DATA_FIM" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT CONVERT(VARCHAR(10), CAST(LEFT(ATEN.DATAHORARIO, 10) AS DATE), 103) AS 
-       DATA, 
-       LEFT(RIGHT(ATEN.DATAHORARIO, 12), 5) 
-       HORARIO, 
-       FUN.NOME                                                            AS 
-       FUNCIONARIO, 
-       ( CASE 
-           WHEN ATEN.STATUS = 1 THEN 'LIVRE' 
-           WHEN ATEN.STATUS = 2 THEN 'AGENDADO' 
-           WHEN ATEN.STATUS = 3 THEN 'ATENDIDO' 
-         END )                                                             AS 
-       STATUS, 
-       ( CASE 
-           WHEN ATEN.PAGAMENTO = 1 THEN 'DINHEIRO' 
-           WHEN ATEN.PAGAMENTO = 2 THEN 'CARTAO' 
-           WHEN ATEN.PAGAMENTO IS NULL THEN 'N/A' 
-         END )                                                             AS 
-       PAGAMENTO, 
-       ISNULL(ATEN.VALOR, '')                                              AS 
-       VALOR, 
-       ISNULL(( ATEN.VALOR * ( FUN.PORCENTAGEM / 100.0 ) ), '')            AS 
-       PORCENTAGEM, 
-       ISNULL((SELECT SUM(VALOR) 
-        FROM   ATENDIMENTO ATEN1 
-        WHERE  ATEN1.FUNCIONARIO = ATEN.FUNCIONARIO 
-               AND ATEN1.STATUS = ATEN.STATUS),'' )
-       TOTAL_VALOR, 
-       ISNULL((SELECT SUM(VALOR * ( FUN1.PORCENTAGEM / 100.0 )) 
-        FROM   ATENDIMENTO ATEN1 
-               INNER JOIN FUNCIONARIO FUN1 
-                       ON ATEN1.FUNCIONARIO = FUN1.ID 
-        WHERE  ATEN1.FUNCIONARIO = ATEN.FUNCIONARIO 
-               AND ATEN1.STATUS = ATEN.STATUS), '')
-       TOTAL_PORCENTAGEM 
+		<![CDATA[SELECT CONVERT(VARCHAR(10), CAST(LEFT(ATEN.DATAHORARIO, 10) AS DATE), 103) AS DATA,
+       LEFT(RIGHT(ATEN.DATAHORARIO, 12), 5) HORARIO,
+       FUN.NOME AS FUNCIONARIO,
+       (CASE
+            WHEN ATEN.STATUS = 1 THEN 'LIVRE'
+            WHEN ATEN.STATUS = 2 THEN 'AGENDADO'
+            WHEN ATEN.STATUS = 3 THEN 'ATENDIDO'
+        END) AS STATUS,
+       (CASE
+            WHEN ATEN.PAGAMENTO = 1 THEN 'DINHEIRO'
+            WHEN ATEN.PAGAMENTO = 2 THEN 'CARTAO'
+            WHEN ATEN.PAGAMENTO IS NULL THEN 'N/A'
+        END) AS PAGAMENTO,
+       ISNULL(ATEN.VALOR, '') AS VALOR,
+       ISNULL((ATEN.VALOR * (FUN.PORCENTAGEM / 100.0)), '') AS PORCENTAGEM,
+	   ISNULL(SUM(ATEN.VALOR) OVER(), 0) AS TOTAL_VALOR,
+	   ISNULL(SUM((ATEN.VALOR * (FUN.PORCENTAGEM / 100.0))) OVER(), 0) TOTAL_PORCENTAGEM 
 FROM   ATENDIMENTO AS ATEN 
        INNER JOIN FUNCIONARIO AS FUN 
                ON ATEN.FUNCIONARIO = FUN.ID 
 WHERE LEFT(ATEN.DATAHORARIO, 10) BETWEEN $P{PR_DATA_INICIO} AND  $P{PR_DATA_FIM} 
 AND ATEN.FUNCIONARIO = $P{PR_FUNCIONARIO}
 AND ATEN.STATUS = $P{PR_STATUS}
-AND ISNULL(ATEN.PAGAMENTO, 0) = $P{PR_PAGAMENTO}]]>
+AND (ISNULL(ATEN.PAGAMENTO, 0) =  $P{PR_PAGAMENTO}  OR ($P{PR_PAGAMENTO}  = 0 AND ISNULL(ATEN.PAGAMENTO, 0) IN(0,1,2)))]]>
 	</queryString>
 	<field name="DATA" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="DATA"/>
@@ -293,7 +259,7 @@ AND ISNULL(ATEN.PAGAMENTO, 0) = $P{PR_PAGAMENTO}]]>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="tableDataset" uuid="3ddf786a-91ce-44b6-a1a7-994d5ecd121b">
+					<datasetRun subDataset="tableDataset" uuid="088546e0-ce76-4349-b320-a88f0a2aff1b">
 						<datasetParameter name="DATA_INICIO">
 							<datasetParameterExpression><![CDATA[$P{PR_DATA_INICIO}]]></datasetParameterExpression>
 						</datasetParameter>

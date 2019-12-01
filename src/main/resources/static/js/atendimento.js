@@ -119,7 +119,6 @@ var MODULO = (function(modulo, $){
 							processData: false,
 							data: JSON.stringify({id: objeto.Usuario }),
 							success: function(usuario){
-								debugger;
 								modulo.atendimento.crieColunaEAdicioneNaTabela(selectorLinha, objeto, usuario, servicos);
 							},
 							error: function(erro){
@@ -192,7 +191,7 @@ var MODULO = (function(modulo, $){
 				processData: false,
 				data: JSON.stringify(objeto),
 				success: function(){
-					var coluna = modulo.atendimento.containeratendido;
+					var coluna = modulo.atendimento.containeratendido.replace("td", "div");
 					modulo.atendimento.atendimentocontexto.Pagamento = $(".forma-de-pagamento").children("option:selected").val();
 					var porcentagem = modulo.atendimento.funcionarios.filter(x => x.Id == modulo.atendimento.atendimentocontexto.Funcionario)[0].Porcentagem / 100;
 					coluna = coluna.replace("{Status}", modulo.atendimento.colunaatendido.replace("{Descricao}", "Atendido").replace("<td>", "").replace("</td>", ""))
