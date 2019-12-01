@@ -94,7 +94,7 @@ public class RepositorioDeUsuarioImpl implements UsuarioRepositorio {
 	public Long consulteIdDoUsuario(String nome) {
 		EntityManager entityManager = fabricaDeEntityManager.createEntityManager();
 
-		Query query = entityManager.createQuery("SELECT u.id FROM Usuario u where u.login = :nome");
+		Query query = entityManager.createQuery("SELECT u.id FROM Usuario u where (u.login = :nome or u.nome = :nome)");
 
 		query.setParameter("nome", nome);
 		
