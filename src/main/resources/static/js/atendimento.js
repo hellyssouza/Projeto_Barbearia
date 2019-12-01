@@ -277,7 +277,7 @@ var MODULO = (function(modulo, $){
 						
 						modulo.atendimento.atendimentos.push(atendimento);
 					});
-					limpaCampos();
+					modulo.atendimento.limpaCampos();
 				},
 				error: function(erro){
 					$("#mensagem").html(erro.responseText);
